@@ -1,0 +1,526 @@
+openapi: 3.0.3
+
+info:
+  title: API Sushi Miyu
+  version: "1.0.0"
+  description: |
+    API REST del restaurante Sushi Miyu.
+    Permite la gestión de usuarios, autenticación, platos y categorías.
+    Incluye mejoras como paginación, búsqueda, ordenación, conteo y endpoints anidados.
+    Autenticación mediante JWT (Bearer Token).
+
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Login
+    description: Autenticación de usuarios
+  - name: Usuarios
+    description: Gestión de usuarios
+  - name: Platos
+    description: Gestión de platos y mejoras
+  - name: Categorías
+    description: Gestión de categorías y endpoints anidados
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        correo:
+          type: string
+        rol:
+          type: string
+          
+    UsuarioMod:
+      type: object
+      properties:
+        nombre:
+          type: string
+        correo:
+          type: string
+        contrasenia:
+          type: string
+        rol:
+          type: string
+
+    UsuarioCreate:
+      type: object
+      required: [nombre, correo, contrasenia, rol]
+      properties:
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        contrasenia:
+          type: string
+        rol:
+          type: string
+          example: user
+
+
+    UsuarioLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          example: admin@sushimiyu.com
+        password:
+          type: string
+          example: "1234"
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    Plato:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+        id_categoria:
+          type: integer
+
+    PlatoCreate:
+      type: object
+      required: [nombre, precio, descripcion, categoria]
+      properties:
+        nombre:
+          type: string
+        precio:
+          type: number
+        descripcion:
+          type: string
+        categoria:
+          type: string
+
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+
+    CategoriaCreate:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+
+
+paths:
+
+  ############################
+  #          LOGIN
+  ############################
+
+  /login:
+    post:
+      tags: [Login]
+      summary: Login y obtención de token JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioLogin"
+      responses:
+        "200":
+          description: Login correcto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Credenciales incorrectas
+
+  ############################
+  #          ME
+  ############################
+
+  /me:
+    get:
+      tags: [Usuarios]
+      summary: Obtener datos del usuario autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "401":
+          description: Token inválido o caducado
+
+  ############################
+  #         USUARIOS
+  ############################
+
+  /usuario:
+    get:
+      tags: [Usuarios]
+      summary: Listar usuarios (ADMIN)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Usuario"
+        "403":
+          description: No autorizado
+    post:
+      tags: [Usuarios]
+      summary: Crear un nuevo usuario
+      security:
+          - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioCreate"
+      responses:
+        "201":
+          description: Usuario creado
+        "400":
+          description: Datos incorrectos
+
+  /usuario/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Obtener usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "404":
+          description: Usuario no encontrado
+
+    put:
+      tags: [Usuarios]
+      summary: Actualizar usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioMod"
+      responses:
+        "200":
+          description: Usuario actualizado
+        "404":
+          description: Usuario no encontrado
+
+    delete:
+      tags: [Usuarios]
+      summary: Eliminar usuario (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario eliminado
+        "404":
+          description: Usuario no encontrado
+
+
+  ############################
+  #          PLATOS
+  ############################
+
+  /plato:
+    get:
+      tags: [Platos]
+      summary: Listado de platos (con mejoras)
+      description: |
+        Endpoint principal de platos que incluye:
+        - Paginación (page, limit)
+        - Ordenación (order)
+        - Búsqueda (search)
+        - Conteo total (count)
+      parameters:
+        - name: page
+          in: query
+          description: Página (empieza en 0)
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Número de elementos por página
+          schema:
+            type: integer
+        - name: order
+          in: query
+          description: Ordenación de resultados
+          schema:
+            type: string
+            enum: [precio_asc, precio_desc, nombre_asc, nombre_desc, id_asc, id_desc]
+        - name: search
+          in: query
+          description: Búsqueda por nombre o descripción
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Devuelve el número total de platos
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de platos o total
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/Plato"
+                  - type: object
+                    properties:
+                      total:
+                        type: integer
+
+    post:
+      tags: [Platos]
+      summary: Crear un plato (ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatoCreate"
+      responses:
+        "201":
+          description: Plato creado
+        "403":
+          description: No autorizado
+
+  /plato/{id}:
+    get:
+      tags: [Platos]
+      summary: Obtener un plato por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Plato encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plato"
+        "404":
+          description: Plato no encontrado
+
+    put:
+      tags: [Platos]
+      summary: Actualizar un plato (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatoCreate"
+      responses:
+        "200":
+          description: Plato actualizado
+        "404":
+          description: Plato no encontrado
+
+    delete:
+      tags: [Platos]
+      summary: Eliminar un plato (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Plato eliminado
+        "404":
+          description: Plato no encontrado
+
+  /categoria/{id}/platos:
+    get:
+      tags: [Platos]
+      summary: Obtener platos de una categoría concreta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de platos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plato"
+        "404":
+          description: Categoría no encontrada
+
+
+  ############################
+  #       CATEGORÍAS
+  ############################
+
+  /categoria:
+    get:
+      tags: [Categorías]
+      summary: Listar categorías
+      responses:
+        "200":
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Categoria"
+
+    post:
+      tags: [Categorías]
+      summary: Crear una nueva categoría
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoriaCreate"
+      responses:
+        "201":
+          description: Categoría creada
+
+  /categoria/{id}:
+    get:
+      tags: [Categorías]
+      summary: Obtener categoría por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Categoría encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        "404":
+          description: Categoría no encontrada
+
+    put:
+      tags: [Categorías]
+      summary: Modificar una categoría
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoriaCreate"
+      responses:
+        "200":
+          description: Categoría modificada
+
+    delete:
+      tags: [Categorías]
+      summary: Eliminar categoría (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Categoría eliminada
+        "404":
+          description: Categoría no encontrada
