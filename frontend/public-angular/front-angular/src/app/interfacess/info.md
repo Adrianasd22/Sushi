@@ -1,0 +1,1 @@
+Las interfaces serán usadas para saber la forma en la que se estructuran los datos para los formularios.
