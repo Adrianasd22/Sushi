@@ -1,16 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { MenuPage } from "./pages/menu-page/menu-page";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  template: `
-    <h1>Welcome to {{ title() }}!</h1>
-
-    <router-outlet />
-  `,
+  imports: [RouterOutlet, MenuPage],
+  templateUrl: 'app.html',
   styles: [],
 })
 export class App {
-  protected readonly title = signal('front-angular');
+  title = signal('Angular');
+  titulo = signal('');
 }
