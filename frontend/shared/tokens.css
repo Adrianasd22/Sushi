@@ -1,0 +1,19 @@
+/**
+* Aqui se crearán las variables utilizadas tanto en React como en Angular
+* Debe ser un archivo css para que ambos lo puedan utilizar (ya que React no compila scss)
+*/
+:root {
+    /* Colores */
+  --negro: #161618;
+  --grisOscuro: #262628;
+  --acento: #860606;
+  --neutro: #949494;
+  --grisClaro: #D9D9D9;
+  --blanco: #E6E6E6;
+
+  /* Border */
+  --borderRadius: 10px;
+  --borderPx: 3px; 
+
+  /* Tipografia */
+}
