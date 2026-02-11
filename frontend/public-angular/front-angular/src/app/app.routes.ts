@@ -6,8 +6,19 @@ import { MenuPage } from './pages/menu-page/menu-page';
 export const routes: Routes = [
   {
     path: '',
+  },
+  {
+    path: 'menu',
     component: MenuPage,
-
+  },
+  {
+    path: '/login',
+  },
+  {
+    path: '/registration',
+  },
+  {
+    path: '**', //Cualquier ruta que no sea las anteriores
   },
 ];
 
@@ -15,6 +26,4 @@ export const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'disabled' })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {
-  
-}
+export class AppRoutingModule {}
