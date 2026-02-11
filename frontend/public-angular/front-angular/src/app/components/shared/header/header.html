@@ -1,4 +1,17 @@
-<svg width="20%" viewBox="0 0 5906 5906" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+<header class="header">
+    <div class="header__left">
+        <button class="header__hamburger" aria-label="Abrir menú" title="Abrir menu">
+            <span></span> <span></span> <span></span>
+        </button>
+    </div>
+    <div class="header__center">
+        <span class="header__logo">
+            <!-- <svg viewBox="0 0 100 100" class="logo-svg">
+                <path d="./../../../../icon/SushiMiyuLogo.svg" />
+                <path d="M10 10 H 90 V 90 H 10 Z" />
+            </svg> -->
+            <!-- <img src="./../../../../../../../../public/SushiMiyuLogo.svg" alt="Sushi Miyu" class="header__logo-img" /> -->
+            <svg width="20%" viewBox="0 0 5906 5906" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
                 <g>
                     <g transform="matrix(0.980372,-0,0,0.980372,-17.949893,-284.4053)">
                         <path
@@ -10,3 +23,28 @@
                     </g>
                 </g>
             </svg>
+
+            <!-- <img src="./logoPrueba.svg" alt="a"> -->
+        </span>
+    </div>
+    <div class="header__right">
+        <button class="header__icon-btn header__cart" aria-label="Ver pedido">
+            🛒
+            <span class="header__cart-count">2</span>
+        </button>
+        <!-- Selector idioma -->
+        <div class="header__lang">
+            <button (click)="LangToggle()" class="header__lang-btn">
+                🌍 <span>{{ currentLang() }}</span> ▼
+            </button>
+
+            @if (showLangOptions()) {
+            <div class="header__lang-dropdown">
+                <button (click)="setLang('ES')" class="btn">ES</button>
+                <button (click)="setLang('EN')" class="btn">EN</button>
+                <button (click)="setLang('JP')" class="btn">JP</button>
+            </div>
+            }
+        </div>
+    </div>
+</header>
