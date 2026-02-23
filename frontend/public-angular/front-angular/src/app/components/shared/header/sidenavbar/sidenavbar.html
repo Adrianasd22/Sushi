@@ -1,0 +1,52 @@
+
+<!-- Hace que el fondo se ponga gris -->
+@if (menuService.isOpen()) {
+    <div class="overlay"
+        (click)="menuService.close()">
+    </div>
+}
+
+<nav class="sidenav" [class.open] = menuService.isOpen()>
+
+  <!-- Botón cerrar -->
+  <button (click)="menuService.close()" class="sidenav__close" aria-label="Cerrar menú">
+    ✕
+  </button>
+
+  <!-- Contenido principal -->
+  <div class="sidenav__content">
+
+    <ul class="sidenav__nav">
+      <li><a routerLink="/">Inicio</a></li>
+      <li><a routerLink="/carta">Carta</a></li>
+      <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
+      <li><a routerLink="/sostenibilidad">Sostenibilidad</a></li>
+      <li><a routerLink="/resenas">Reseñas</a></li>
+      <li><a routerLink="/idioma">Idioma</a></li>
+      <li><a routerLink="/unete">Únete a nosotros</a></li>
+    </ul>
+
+  </div>
+
+  <!-- Footer fijo abajo -->
+  <div class="sidenav__footer">
+
+    <div class="sidenav__divider"></div>
+
+    <div class="sidenav__promo">
+      <p>Únete a Sushi Miyu para recibir descuentos en tu próxima visita</p>
+      <button class="btn-registrar">Registrarse</button>
+    </div>
+
+    <div class="sidenav__social">
+      <span>Facebook</span>
+      <span>Instagram</span>
+      <span>WhatsApp</span>
+      <span>X</span>
+    </div>
+
+    <p class="sidenav__handle">@SushiMiyu</p>
+
+  </div>
+
+</nav>

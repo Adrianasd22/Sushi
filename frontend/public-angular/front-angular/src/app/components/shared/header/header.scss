@@ -48,23 +48,13 @@ $color-hover: #1d1d1d;
     &__center {
         position: absolute;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-10%);
     }
 
     /* ============================= */
     /* LOGO */
     /* ============================= */
-
-    // &__logo {
-    //     font-size: clamp(1.2rem, 2vw, 1.8rem);
-    //     font-weight: 600;
-    //     letter-spacing: 1px;
-    //     margin: 0;
-    // }
-
-    .logo-svg path {
-        fill: $blanco;
-    }
+    
     .header__logo-img {
         color: $blanco;
     }

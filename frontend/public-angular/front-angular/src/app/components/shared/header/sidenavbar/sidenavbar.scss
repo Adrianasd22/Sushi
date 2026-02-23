@@ -1,0 +1,166 @@
+$negro: var(--negro);
+$grisOscuro: var(--grisOscuro);
+$acento: var(--acento);
+$neutro: var(--neutro);
+$grisClaro: var(--grisClaro);
+$blanco: var(--blanco);
+
+$bordRad: var(--borderRadius);
+$borderPx: var(--borderPx);
+
+//
+
+.sidenav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100dvh;
+
+  background-color: #000;
+  color: $blanco;
+
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.sidenav.open {
+  transform: translateX(0);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+/* BOTÓN CERRAR */
+.sidenav__close {
+  background: none;
+  border: none;
+  color: $blanco;
+  font-size: 1.8rem;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: 2rem;
+
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+/* CONTENIDO CENTRAL */
+.sidenav__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sidenav__nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin-bottom: 1.5rem;
+  }
+
+  a {
+    text-decoration: none;
+    color: $blanco;
+    font-size: 1.2rem;
+    font-weight: 400;
+    position: relative;
+
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $neutro;
+      &::after {
+        width: 100%;
+      }
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+
+      width: 0%;
+      height: 2px;
+      background-color: $blanco;
+
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+/* FOOTER */
+.sidenav__footer {
+  //   margin-top: auto;
+//   flex-shrink: 0;
+  min-height: 300px;
+}
+
+/* Línea separadora */
+.sidenav__divider {
+  height: 1px;
+  width: 100%;
+  background-color: $grisOscuro;
+  margin: 1.5rem 0;
+}
+
+/* Promo */
+.sidenav__promo {
+  background: $grisOscuro;
+  padding: 1rem;
+  border-radius: $bordRad;
+  margin-bottom: 1.5rem;
+
+  p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.btn-registrar {
+  width: 100%;
+  padding: 0.6rem;
+  background: transparent;
+  border: $borderPx solid $blanco;
+  color: $blanco;
+  border-radius: $bordRad;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: $blanco;
+    color: $negro;
+  }
+}
+
+/* Social */
+.sidenav__social {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.sidenav__handle {
+  font-size: 0.8rem;
+  color: $grisClaro;
+}
