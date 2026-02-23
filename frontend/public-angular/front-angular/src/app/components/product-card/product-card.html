@@ -1,0 +1,39 @@
+<div class="card">
+
+  <!-- Imagen fondo -->
+  <div class="card__image">
+    <!-- <img src="./gyozas.png" alt="Gyozas"> -->
+  </div>
+
+  <!-- Overlay info -->
+  <div class="card__content">
+
+    <h3 class="card__title">
+      {{name() }}
+    </h3>
+
+    <div class="card__extra">
+      <p class="card__description">
+        {{ description() }}
+      </p>
+
+      <p class="card__price">
+        {{ price() }} €
+      </p>
+
+      <div class="card__allergens">
+        @for (a of allergens(); track $index) {
+            <!-- @if(a === 'P'){
+                <span
+                    class="allergen-dot"
+                    [style.background]="allergenColors[a.code()]"
+                ></span>
+            } -->
+          {{a}}
+        }
+      </div>
+    </div>
+
+  </div>
+
+</div>

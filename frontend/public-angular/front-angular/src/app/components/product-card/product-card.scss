@@ -1,0 +1,104 @@
+$negro: var(--negro);
+$grisOscuro: var(--grisOscuro);
+$acento: var(--acento);
+$neutro: var(--neutro);
+$grisClaro: var(--grisClaro);
+$blanco: var(--blanco);
+
+$bordRad: var(--borderRadius);
+$borderPx: var(--borderPx);
+
+.card {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  border-radius: $bordRad;
+  overflow: hidden;
+  cursor: pointer;
+
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* Imagen fondo */
+.card__image {
+  position: absolute;
+  background-image: url(./gyozas.png);
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+}
+
+/* Capa contenido */
+.card__content {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  background: rgba(20, 20, 20, 0.65);
+  backdrop-filter: blur(8px);
+
+  color: $blanco;
+  padding: 1.2rem;
+
+  transform: translateY(65%);
+  transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Nombre visible siempre */
+.card__title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+/* Parte oculta */
+.card__extra {
+  margin-top: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card__description {
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  color: $grisClaro;
+}
+
+.card__price {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.card__allergens {
+  display: flex;
+  gap: 0.5rem;
+
+  img {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.allergen-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* 🔥 HOVER EFFECT */
+.card:hover .card__content {
+  transform: translateY(0);
+}
+
+.card:hover .card__extra {
+  opacity: 1;
+}
+
+.card:hover .card__image {
+  transform: scale(1.05);
+}

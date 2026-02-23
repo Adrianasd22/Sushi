@@ -1,4 +1,15 @@
 
 Menu
 
-<product-card/>
+<hr>
+
+<div class="container">
+    <div class="menu__grid">
+        @for (item of products(); track item.id) {
+            <product-card [id]="item.id" [price]="item.price" [name]="item.name" [description]="item.description" [allergens]="item.allergens" />
+        }
+    </div>
+</div>
+
+
+

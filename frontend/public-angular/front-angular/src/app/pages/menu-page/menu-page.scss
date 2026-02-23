@@ -1,0 +1,22 @@
+.menu {
+  padding: 4rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.container{
+    width: 100%;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.menu__grid {
+  display: grid;
+
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(260px, 1fr)
+  );
+
+  gap: 1rem;
+}
