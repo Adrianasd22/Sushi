@@ -20,6 +20,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('categories')
                 ->onDelete('cascade');
+            $table->string('image')->nullable(); // Guardaremos la ruta de la img
             $table->timestamps();
         });
     }

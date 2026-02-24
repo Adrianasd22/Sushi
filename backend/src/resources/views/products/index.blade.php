@@ -13,6 +13,7 @@
             <p>{{ $product->description }}</p>
             <p><strong>Precio:</strong> €{{ $product->price }}</p>
             <p><strong>Categoría:</strong> {{ $product->category->name ?? 'Sin categoría'}}</p>
+            <img src="{{ asset('storage/' . $product->image) }}" width="200" alt="{{$product->name}}">
         </div>
     @endforeach
 
