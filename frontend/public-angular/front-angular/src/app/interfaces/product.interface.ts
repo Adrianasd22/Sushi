@@ -1,12 +1,11 @@
-import { Allergen } from "./allergen.interface";
-
-
 export interface Product { 
     id: number;
     name: string;
     description: string;
     price: number;
-    allergens: string[];
+    category : string;
+    image : string;
+    // allergens: string[];
     // allergens: Allergen[];
 }
 

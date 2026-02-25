@@ -12,6 +12,7 @@ $borderPx: var(--borderPx);
   position: relative;
   height: 200px;
   width: 100%;
+  max-width: 300px;
   border-radius: $bordRad;
   overflow: hidden;
   cursor: pointer;
@@ -26,11 +27,15 @@ $borderPx: var(--borderPx);
 /* Imagen fondo */
 .card__image {
   position: absolute;
-  background-image: url(./gyozas.png);
+  // background-image: url(./gyozas.png);
   inset: 0;
   background-size: cover;
   background-position: center;
   transition: transform 0.6s ease;
+}
+
+.bg-img{
+  height: 100%;
 }
 
 /* Capa contenido */
