@@ -14,13 +14,13 @@ RUN apt-get update && apt-get install -y \
 
 # DocumentRoot en /var/www/html/public (Laravel)
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-# Supuestamente para el error 403 al entrar al blade
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf 
+# # Supuestamente para el error 403 al entrar al blade
+# RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf 
 
 WORKDIR /var/www/html
 
 RUN chown -R www-data:www-data /var/www/html
-# USER www-data
+USER www-data
 
 ENV COMPOSER_HOME=/tmp/composer
 ENV COMPOSER_CACHE_DIR=/tmp/composer/cache
