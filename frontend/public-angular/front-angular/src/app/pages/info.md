@@ -1,1 +1,0 @@
-Aqui se crearan las paginas necesarias. Dentro de cada una debe haber el codigo minimo (solo componentes)

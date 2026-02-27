@@ -4,13 +4,20 @@ Menu
 <hr>
 
 <div class="container">
-    <div class="menu__grid">
-        @for (item of products(); track item.id) {
-            <product-card [product]="item"/>
-        }
 
+    <div class="menu__grid">
+        @for (product of products(); track product.id) {
+            <category-section [products]="[product]" [title]="product.category.name"/>
+        }
         
     </div>
+
+    <!-- <div class="menu__grid">
+        @for (category of groupedProducts(); track category) {
+            <category-section [products]="category.products" [title]="category.name"/>
+        }
+        
+    </div> -->
 </div>
 
 

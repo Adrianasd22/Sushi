@@ -1,1 +1,0 @@
-Los servicios se utilizan para guardar la informacion y recogerla de las apis o peticiones.
