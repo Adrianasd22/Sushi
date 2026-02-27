@@ -1,0 +1,53 @@
+
+INSERT INTO categoria (nombre) VALUES
+('entrantes'),
+('makis'),
+('niguiris'),
+('gyozas'),
+('noodles'),
+('sopas'),
+('ramen'),
+('arroces'),
+('tartares'),
+('bebidas'),
+('postres'),
+('carnes'),
+('baos');
+
+INSERT INTO plato (nombre, precio, descripcion, id_categoria) VALUES
+('Takoyakis', 4.50, 'Bolas de masa rellenas de pulpo con salsa teriyaki y mayonesa.', 1),
+('Maki de Salmón', 6.90, 'Rollo de arroz con alga nori y salmón fresco.', 2),
+('Niguiri de Atún', 3.50, 'Bola de arroz cubierta con lámina de atún rojo.', 3),
+('Gyozas de cerdo', 7.20, 'Empanadillas japonesas rellenas de carne de cerdo y verduras, a la plancha.', 4),
+('Yakisoba de verduras', 9.80, 'Fideos salteados con verduras y salsa yakisoba tradicional.', 5),
+('Sopa Miso', 4.00, 'Caldo tradicional japonés con tofu, algas wakame y cebollino.', 6),
+('Ramen Tonkotsu', 12.50, 'Caldo de cerdo con fideos ramen, panceta, huevo marinado y bambú.', 7),
+('Arroz frito con huevo y verduras', 8.90, 'Arroz japonés salteado con huevo, zanahoria y cebolleta.', 8),
+('Tartar de salmón', 13.50, 'Dados de salmón fresco con soja, sésamo y aguacate.', 9),
+('Sushi California Roll', 7.50, 'Roll japonés con cangrejo, pepino y aguacate',2),
+('Sashimi de Atún', 13.00, 'Láminas finas de atún fresco de grado sushi',1),
+('Udon con Tempura', 10.50, 'Fideos udon en caldo suave con tempura de vegetales', 5),
+('Yakimeshi', 8.20, 'Arroz frito japonés con huevo, verduras y pollo',8),
+('Katsu Curry', 12.80, 'Cerdo empanizado servido con curry japonés y arroz blanco', 8),
+('Gohan', 3.50, 'Arroz blanco japonés al vapor', 8),
+('Bao de Cerdo', 4.90, 'Panecillo taiwanés al vapor relleno de cerdo a la barbacoa',13),
+('Roll Dragon', 11.90, 'Roll de sushi con anguila, pepino y topping de aguacate',2),
+('Pollo Teriyaki', 9.80, 'Pollo glaseado con salsa teriyaki y acompañado de arroz',8),
+('Dim Sum Variado', 12.00, 'Selección de bocados al vapor típicos de Cantón',1),
+('Sopa Miso', 4.50, 'Caldo japonés con tofu, algas wakame y cebollín',6),
+('Tonkatsu', 9.90, 'Corte de cerdo empanizado al estilo japonés, crujiente y jugoso',12),
+('Chow Mein', 9.20, 'Fideos chinos salteados con pollo y vegetales',5),
+('Roll Spicy Tuna', 9.50, 'Roll de atún picante con mayonesa y salsa siracha',2),
+('Karaage', 7.80, 'Pollo frito japonés marinado en jengibre y soya',12),
+('Soba Frío', 8.50, 'Fideos soba servidos fríos con salsa tsuyu para mojar',5),
+('Hot Pot de Res', 14.90, 'Olla caliente con tiras de res, tofu y verduras',12),
+('Arroz Nasi Goreng', 10.00, 'Arroz frito indonesio con huevo y pollo especiado',8),
+('Laksa', 11.70, 'Sopa picante malaya con leche de coco y fideos',6),
+('Gaifan de Cerdo', 8.70, 'Salteado chino de cerdo con salsa de soya sobre arroz',8),
+('Mochi de mango', 4.80, 'Dulce japonés relleno de helado de mango.', 11);
+
+INSERT INTO usuario (nombre, contrasenia, correo, rol) VALUES
+('Ainhoa', 1234, 'ainhoa@sushimiyu.com', 'admin'),
+('Adriana', 1234, 'adriana@sushimiyu.com', 'admin'),
+('Joaqui', 1234, 'joaqui@sushimiyu.com', 'admin'),
+('Ivan', 1234, 'ivan@sushimiyu.com', 'user');
