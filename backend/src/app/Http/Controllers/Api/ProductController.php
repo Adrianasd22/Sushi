@@ -10,10 +10,44 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     // GET /api/products
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->get();
+        $query = Product::with('category');
+
+        // 🔍 Buscar por nombre
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+
+        // 📂 Filtrar por categoría
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // 🔀 Ordenar
+        if ($request->sort) {
+            $query->orderBy($request->sort, $request->order ?? 'asc');
+        }
+
+        // 📦 Ejecutar query
+        $products = $query->get();
+
+
         return ProductResource::collection($products);
+    }
+
+    /**
+     * Display the specified resource by id.
+     */
+    public function show(string $id)
+    {
+        $product = Product::with('category')->find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'No encontrado'], 404);
+        }
+
+        return new ProductResource($product);
     }
 
     /**
@@ -21,15 +55,33 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        // Guardar imagen si tiene
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')
+                ->store('products', 'public');
+        }
+
+        // Crear producto
+        $product = Product::create($validated);
+
+        // 🔗 Relación intolerancias
+        // if ($request->intolerances) {
+        //     $product->intolerances()->sync($request->intolerances);
+        // }
+
+        // Devolvemos el recurso creado y código 201 (Created)
+        return response()->json([
+            'mensaje' => 'Producto creado con éxito',
+            'data' => new ProductResource($product)
+        ], 201);
     }
 
     /**
@@ -37,7 +89,24 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'No encontrado'], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'string|max:255',
+            'description' => 'string',
+            'price' => 'numeric|min:0',
+        ]);
+
+        $product->update($validated);
+
+        return response()->json([
+            'mensaje' => 'Actualizado correctamente',
+            'data' => new ProductResource($product)
+        ], 200);
     }
 
     /**
