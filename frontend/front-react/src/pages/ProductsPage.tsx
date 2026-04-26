@@ -1,7 +1,26 @@
+import { useState, useEffect } from "react"
 import ProductItem from "../components/products/ProductItem"
-import { mockProducts } from "../components/products/mockProducts"
+// import { mockProducts } from "../components/products/mockProducts"
+import { getProducts } from "../services/productService"
+import type { Product } from "../types/products"
+import ProductSkeleton from "../components/products/ProductSkeleton"
 
 function ProductsPage() {
+
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const data = await getProducts()
+      setProducts(data)
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Título */}
@@ -37,14 +56,27 @@ function ProductsPage() {
       </div>
 
       {/* Listado */}
-      <div className="bg-zinc-900 rounded-md divide-y divide-zinc-800 sflex flex-col">
+      {/* <div className="bg-zinc-900 rounded-md divide-y divide-zinc-800 sflex flex-col">
         {mockProducts.map(product => (
           <ProductItem
             key={product.id}
             product={product}
           />
         ))}
-      </div>
+      </div> */}
+
+        {/* LISTA de productos*/}
+        <div className=" rounded-md divide-y divide-zinc-800 flex flex-col">
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))
+            : products.map(product => (
+                <ProductItem key={product.id} product={product} />
+              ))
+          }
+        </div>
+
       </div>
     </div>
   )

@@ -1,12 +1,8 @@
 import { Eye, Pencil, Trash2 } from "lucide-react"
+import type { Product } from "../../types/products"
 
 interface ProductItemProps {
-  product: {
-    name: string
-    description: string
-    price: number
-    allergens: string[]
-  }
+  product: Product
 }
 
 function ProductItem({ product }: ProductItemProps) {
@@ -23,7 +19,7 @@ function ProductItem({ product }: ProductItemProps) {
           </h3>
 
           <span className="text-sm text-zinc-300">
-            {product.price.toFixed(2)} €
+            {product.price} €
           </span>
         </div>
 
@@ -31,16 +27,6 @@ function ProductItem({ product }: ProductItemProps) {
           {product.description}
         </p>
 
-        {/* Alérgenos */}
-        <div className="flex gap-2 mt-2">
-          {product.allergens.map((allergen, index) => (
-            <span
-              key={index}
-              className="w-3 h-3 rounded-full bg-red-500"
-              title={allergen}
-            />
-          ))}
-        </div>
       </div>
 
       {/* Acciones */}

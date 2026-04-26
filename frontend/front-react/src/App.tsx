@@ -8,6 +8,7 @@ import UsersPage from './pages/UsersPage.tsx';
 import TablesPage from './pages/TablesPage.tsx';
 import OrdersPage from './pages/OrdersPage.tsx';
 import RestaurantMapPage from './pages/RestaurantMapPage.tsx';
+import CategoriesPage from './pages/CategoriesPage.tsx';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/tables" element={<TablesPage />} />
           <Route path="/tables-map" element={<RestaurantMapPage />} />
