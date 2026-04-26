@@ -40,7 +40,7 @@
         <nav class="flex gap-6 text-sm text-gray-300">
             <a href="#" class="hover:text-white">Inicio</a>
             <a href="{{ route('products.index') }}" class="text-primary">Productos</a>
-            <a href="#" class="hover:text-white">Categorías</a>
+            <a href="{{ route('categories.index') }}" class="hover:text-white">Categorías</a>
             <a href="#" class="hover:text-white">Pedidos</a>
             <a href="#" class="hover:text-white">Usuarios</a>
         </nav>

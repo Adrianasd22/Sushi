@@ -51,16 +51,31 @@
         - ✅ products?search={name}
         - ✅ products?category_id={id}&search={name}
 
+        - ✅ categories
+        - ✅ categories/{id}
+        - ✅ categories-with-products
+
     - POST:
+        - ✅ products
+        - ✅ categories
     - PUT:
+        - ✅ products/{id}
+        - ✅ categories/{id}
     - DELETE:
+        - ✅ products/{id}
+        - ✅ categories/{id}
 
 - ``web.php`` --> products.index
 
 ---
 ## Blades
+
+/Products
 - ✅ index
 - Tarea pendiente
+
+/Categories
+- ✅ index
 
 
 

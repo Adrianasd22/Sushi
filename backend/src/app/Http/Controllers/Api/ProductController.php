@@ -32,7 +32,6 @@ class ProductController extends Controller
         // 📦 Ejecutar query
         $products = $query->get();
 
-
         return ProductResource::collection($products);
     }
 
@@ -44,7 +43,7 @@ class ProductController extends Controller
         $product = Product::with('category')->find($id);
 
         if (!$product) {
-            return response()->json(['error' => 'No encontrado'], 404);
+            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
 
         return new ProductResource($product);
@@ -60,22 +59,18 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image',
+            'image' => 'nullable|string',
+            // 'name' => 'sometimes|required'
         ]);
 
         // Guardar imagen si tiene
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')
-                ->store('products', 'public');
-        }
+        // if ($request->hasFile('image')) {
+        //     $validated['image'] = $request->file('image')
+        //         ->store('products', 'public');
+        // }
 
         // Crear producto
         $product = Product::create($validated);
-
-        // 🔗 Relación intolerancias
-        // if ($request->intolerances) {
-        //     $product->intolerances()->sync($request->intolerances);
-        // }
 
         // Devolvemos el recurso creado y código 201 (Created)
         return response()->json([
@@ -92,19 +87,25 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['error' => 'No encontrado'], 404);
+            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
 
         $validated = $request->validate([
-            'name' => 'string|max:255',
-            'description' => 'string',
-            'price' => 'numeric|min:0',
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'price' => 'sometimes|required|numeric|min:0',
+            'category_id' => 'sometimes|required|exists:categories,id',
         ]);
+
+        //Si no hay datos
+        if (empty($validated)) {
+            return response()->json(['error' => 'No hay datos para actualizar'], 400);
+        }
 
         $product->update($validated);
 
         return response()->json([
-            'mensaje' => 'Actualizado correctamente',
+            'mensaje' => 'Producto actualizado correctamente',
             'data' => new ProductResource($product)
         ], 200);
     }
@@ -114,6 +115,14 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        $product->delete();
+
+        return response()->json(['mensaje' => 'Producto eliminado correctamente'], 200);
     }
 }
