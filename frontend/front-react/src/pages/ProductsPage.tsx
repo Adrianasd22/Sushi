@@ -1,25 +1,47 @@
 import { useState, useEffect } from "react"
 import ProductItem from "../components/products/ProductItem"
 // import { mockProducts } from "../components/products/mockProducts"
-import { getProducts } from "../services/productService"
 import type { Product } from "../types/products"
 import ProductSkeleton from "../components/products/ProductSkeleton"
+import { getProducts } from "../services/productService"
+import type { Category } from "../types/category"
+import { getCategories } from "../services/CategoryService"
 
 function ProductsPage() {
 
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState<Category[]>([])
+
+  const [loadingProducts, setLoadingProducts] = useState(true)
+  const [loadingCategories, setLoadingCategories] = useState(true)
+
+  const [search, setSearch] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoadingCategories(true)
+      const data = await getCategories()
+      setCategories(data)
+      setLoadingCategories(false)
+    }
+
+    fetchCategories()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true)
-      const data = await getProducts()
+      setLoadingProducts(true)
+      const data = await getProducts({
+        search,
+        category_id: selectedCategory ? Number(selectedCategory) : undefined ////Creo q esta mal
+      })
       setProducts(data)
-      setLoading(false)
+      setLoadingProducts(false)
     }
 
     fetchData()
-  }, [])
+  }, [search, selectedCategory])
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -32,6 +54,8 @@ function ProductsPage() {
         <input
           type="text"
           placeholder="Buscar producto..."
+          value={search}
+          onChange={(e)=>setSearch(e.target.value)}
           className="
             flex-1 px-4 py-2 rounded-md
             bg-zinc-800 text-zinc-100
@@ -41,17 +65,27 @@ function ProductsPage() {
         />
 
         <select
+          value={selectedCategory}
+          onChange={(e)=>setSelectedCategory(e.target.value)}
+          disabled={loadingCategories}
           className="
             px-4 py-2 rounded-md
             bg-zinc-800 text-zinc-100
             focus:outline-none
           "
         >
-          <option value="">Todas las categorías</option>
-          <option value="arroces">Arroces</option>
-          <option value="nigiris">Nigiris</option>
-          <option value="sopas">Sopas</option>
-          <option value="salsas">Salsas</option>
+          {loadingCategories ? (
+            <option>Cargando categorías...</option>
+          ) : (
+            <>
+              <option value="">Todas las categorías</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </>
+          )}
         </select>
       </div>
 
@@ -67,7 +101,7 @@ function ProductsPage() {
 
         {/* LISTA de productos*/}
         <div className=" rounded-md divide-y divide-zinc-800 flex flex-col">
-          {loading
+          {loadingProducts
             ? Array.from({ length: 5 }).map((_, i) => (
                 <ProductSkeleton key={i} />
               ))

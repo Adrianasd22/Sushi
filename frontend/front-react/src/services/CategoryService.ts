@@ -18,3 +18,9 @@ export async function getCategories(): Promise<Category[]> {
     return []
   }
 }
+
+export async function getProductById(id: number) {
+  const res = await fetch(`http://localhost:8080/api/products/${id}`)
+  const data = await res.json()
+  return data.data ?? data
+}
