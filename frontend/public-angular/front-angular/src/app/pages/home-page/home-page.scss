@@ -10,7 +10,7 @@ $borderPx:  var(--borderPx);
 .hero {
   display: flex;
   width: 100%;
-
+  margin: 0;
   // Ocupa el viewport menos el header (60px definido en header.scss)
   height: calc(100dvh - 60px);
   overflow: hidden;
@@ -71,9 +71,8 @@ $borderPx:  var(--borderPx);
   flex: 1;
   overflow: hidden;
 
-  // Imagen de fondo: apunta al asset hero.png que ya existe en el proyecto.
-  // Ajusta la ruta si tu imagen está en otro lugar (p.ej. /assets/hero.jpg)
-  background-image: url('/assets/hero.png');
+  // Imagen de fondo
+  background-image: url('../../images/portada.png');
   background-size: cover;
   background-position: center;
 }

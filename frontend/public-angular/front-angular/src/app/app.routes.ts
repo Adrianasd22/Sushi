@@ -2,6 +2,7 @@ import { NgModule, signal } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MenuPage } from './pages/menu-page/menu-page';
 import { HomePage } from './pages/home-page/home-page';
+import { LoginPage } from './pages/login-page/login-page';
 
 
 export const routes: Routes = [
@@ -17,9 +18,10 @@ export const routes: Routes = [
     path: 'menu',
     component: MenuPage,
   },
-  // {
-  //   path: 'login',
-  // },
+  {
+    path: 'login',
+    component: LoginPage,
+  },
   // {
   //   path: 'registration',
   // },
