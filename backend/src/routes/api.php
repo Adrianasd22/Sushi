@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
 
 Route::get('/prueba', function () {
     return ['mensaje' => 'API funcionando correctamente'];
@@ -32,8 +33,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
 
-Route::get('categories', [CategoryController::class, 'index']);
+    Route::get('categories', [CategoryController::class, 'index']);
 
-    // EXTRA (muy importante para tu caso)
     Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
+
+    //Rutas de pedidos
+    Route::get('orders',          [OrderController::class, 'index']);
+    Route::get('orders/{id}',     [OrderController::class, 'show']);
+    Route::post('orders',         [OrderController::class, 'store']);
+    Route::put('orders/{id}',     [OrderController::class, 'update']);
+    Route::delete('orders/{id}',  [OrderController::class, 'destroy']);
 });
