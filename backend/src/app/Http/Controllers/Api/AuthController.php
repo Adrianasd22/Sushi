@@ -24,12 +24,14 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'user'
         ]);
 
         // RESPUESTA: Solo confirmamos que se ha creado. NO entregamos token aquí.
         return response()->json([
             'mensaje' => 'Usuario registrado exitosamente. Por favor inicia sesión.',
             'user' => $user, // Opcional: devolver los datos del usuario creado
+            'role' => $user->role
         ], 201);
     }
 
@@ -51,6 +53,7 @@ class AuthController extends Controller
             'access_token' => $token, // La llave de acceso
             'token_type' => 'Bearer',
             'user' => $user,
+            'role' => $user->role ////
         ]);
     }
 

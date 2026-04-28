@@ -82,3 +82,23 @@ Las imagenes que se usaran para los platos principalmente estan en
 ```
 Sushi\backend\src\storage\app\public\products\gyozas.png
 ```
+
+## BREEZE:
+Breeze es un generador de autentificacion automatica.
+
+Te crea automáticamente:
+
+🔐 Backend
+- Controlador de login
+- Controlador de registro
+- Validaciones
+- Logout
+- Rutas de auth
+🎨 Frontend (opcional)
+- Vistas Blade (login, register, etc.)
+
+
+```
+composer require laravel/breeze --dev
+php artisan breeze:install
+```
