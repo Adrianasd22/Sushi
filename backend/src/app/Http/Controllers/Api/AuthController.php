@@ -52,8 +52,7 @@ class AuthController extends Controller
             'mensaje' => 'Hola ' . $user->name,
             'access_token' => $token, // La llave de acceso
             'token_type' => 'Bearer',
-            'user' => $user,
-            'role' => $user->role ////
+            'user' => $user
         ]);
     }
 
