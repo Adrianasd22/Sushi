@@ -33,7 +33,7 @@ class UserController extends Controller
     //Crear un usuario, con la diferencia de registrarse que aqui podras especificar el rol
     public function store(Request $request)
     {
-        if ($request()->user()->role !== 'admin') {
+        if ($request->user()->role !== 'admin') {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 

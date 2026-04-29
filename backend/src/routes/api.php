@@ -32,13 +32,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // ---- CON ROL WORKER O ADMIN ----
-Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     //Aqui van las rutas de poder ver las reservas y los pedidos
 });
 
 
 // ---- SOLO CON ROL ADMIN ----
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
