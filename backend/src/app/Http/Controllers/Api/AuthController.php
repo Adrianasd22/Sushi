@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         // Validamos el name y el email.
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
@@ -21,9 +21,9 @@ class AuthController extends Controller
 
         // Guardamos el usuario en la base de datos con password hasheada.
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
             'role' => 'user'
         ]);
 
@@ -38,12 +38,17 @@ class AuthController extends Controller
     // 2. LOGIN: El único encargado de dar Tokens
     public function login(Request $request)
     {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         // Busca en la base de datos si existe el usuario y los datos son correctos.
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($validated)) {
             return response()->json(['mensaje' => 'Credenciales inválidas'], 401);
         }
 
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $validated['email'])->firstOrFail();
 
         // AQUÍ es donde se genera el token
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -52,8 +57,7 @@ class AuthController extends Controller
             'mensaje' => 'Hola ' . $user->name,
             'access_token' => $token, // La llave de acceso
             'token_type' => 'Bearer',
-            'user' => $user,
-            'role' => $user->role ////
+            'user' => $user
         ]);
     }
 
