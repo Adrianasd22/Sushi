@@ -95,3 +95,74 @@
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 2rem;
 }
+
+// Animacion loader
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 300px;
+  text-align: center;
+  gap: 1rem;
+}
+
+/* LOADING */
+.state--loading p {
+  color: #555;
+}
+
+/* ERROR */
+.state--error {
+  color: #d62828;
+}
+
+/* 🍣 Loader tipo sushi */
+.loader {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  background: linear-gradient(
+    45deg,
+    #d62828,
+    #f77f00
+  );
+
+  position: relative;
+
+  animation: spin 1s linear infinite;
+}
+
+.loader::after {
+  content: '';
+  position: absolute;
+
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+
+  background: white;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+//LOader 2
+.loader2 {
+  font-size: 40px;
+  animation: bounce 1s infinite ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}

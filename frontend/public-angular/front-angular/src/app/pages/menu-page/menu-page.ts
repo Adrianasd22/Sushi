@@ -34,10 +34,24 @@ export class MenuPage {
   searchTerm = signal('');
   selectedCategory = signal<number>(1);
 
+  //Carga de datos
+  loading = signal(true);
+  error = signal(false);
+
   constructor() {
     // Cargar productos al iniciar
+    this.loading.set(true);
+
     this.productService.loadProducts().subscribe({
-      error: (err) => console.log('Error: ', err),
+      next: () => {
+        this.loading.set(false);
+        this.error.set(false);
+      },
+      error: (err) => {
+        console.log('Error: ', err);
+        this.loading.set(false);
+        this.error.set(true);
+      }
     });
 
     effect(() => {
