@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // ---- CON ROL WORKER O ADMIN ----
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
     //Aqui van las rutas de poder ver las reservas y los pedidos
 });
 
