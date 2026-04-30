@@ -36,19 +36,19 @@ El proyecto se organiza en tres partes principales:
 ## Partes del proyecto
 
 ### Frontend Angular
-![alt text](image-1.png)
+![alt text](public/image-1.png)
 Frontend público con páginas HTML, SCSS y lógica de navegación. Está pensado para mostrar el menú del restaurante y permitir el acceso a las secciones públicas.
 
 > Documentación completa en: [`frontend/public-angular/front-angular/README.md`](frontend/public-angular/front-angular/README.md)
 
 ### Frontend React
-![alt text](image.png)
+![alt text](public/image.png)
 Dashboard administrativo con React y TailwindCSS. Incluye gestión de productos, categorías, usuarios, mesas y pedidos.
 
 > Documentación completa en: [`frontend/front-react/README.md`](frontend/front-react/README.md)
 
 ### Backend Laravel
-![alt text](image-2.png)
+![alt text](public/image-2.png)
 API REST en Laravel con autenticación, gestión de usuarios, productos, categorías y pedidos. Utiliza Sanctum y Breeze para la seguridad y las vistas básicas.
 
 > Documentación completa en: [`backend/README.md`](backend/README.md)
