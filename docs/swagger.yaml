@@ -434,6 +434,164 @@ paths:
           description: Categoría no encontrada
 
 
+
+  ############################
+  #          PEDIDOS
+  ############################
+  /pedidos:
+    get:
+      tags: [Pedidos]
+      summary: Listar pedidos
+      responses:
+        "200":
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pedido"
+              example:
+                - id: 1
+                  total: 19.99
+                  user_id: 2
+                  products: [
+                    {
+                      id: 1,
+                      name: "Takoyakis",
+                      quantity: 2,
+                      unit_price: 5.50
+                    },
+                    {
+                      id: 3,
+                      name: "Edamame con Sal Marina",
+                      quantity: 1,
+                      unit_price: 2.30
+                    }
+                  ]
+
+
+    post:
+      tags: [Pedidos]
+      summary: Crear un nuevo pedido
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PedidoCreate"
+      responses:
+        "201":
+          description: Pedido creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pedido"
+      
+    put:
+      tags: [Pedidos]
+      summary: Actualizar un pedido
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PedidoUpdate"
+      responses:
+        "200":
+          description: Pedido actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pedido"
+        "404":
+          description: Pedido no encontrado
+
+    delete:
+      tags: [Pedidos]
+      summary: Eliminar un pedido
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pedido eliminado correctamente
+        "404":
+          description: Pedido no encontrado
+  /pedido/{id}:
+    get:
+      tags: [Pedidos]
+      summary: Obtener un pedido por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pedido"
+        "404":
+          description: Pedido no encontrado
+    put:
+      tags: [Pedidos]
+      summary: Actualizar un pedido por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PedidoUpdate"
+      responses:
+        "200":
+          description: Pedido actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pedido"
+        "404":
+          description: Pedido no encontrado
+    delete:
+      tags: [Pedidos]
+      summary: Eliminar un pedido por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pedido eliminado correctamente
+        "404":
+          description: Pedido no encontrado
+
+
   ############################
   #       CATEGORÍAS
   ############################

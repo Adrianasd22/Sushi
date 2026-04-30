@@ -106,6 +106,9 @@ $borderPx: var(--borderPx);
     }
   }
 }
+.sidenav__nav li a {
+  cursor: pointer;
+}
 
 /* FOOTER */
 .sidenav__footer {

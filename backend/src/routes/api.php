@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\UserController;
 
 Route::get('/prueba', function () {
@@ -43,7 +44,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
 
-    Route::post('products', [ProductController::class, 'store']);
+        Route::post('products', [ProductController::class, 'store']);
     Route::put('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
 
@@ -53,4 +54,12 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
+    Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
+
+    //Rutas de pedidos
+    Route::get('orders',          [OrderController::class, 'index']);
+    Route::get('orders/{id}',     [OrderController::class, 'show']);
+    Route::post('orders',         [OrderController::class, 'store']);
+    Route::put('orders/{id}',     [OrderController::class, 'update']);
+    Route::delete('orders/{id}',  [OrderController::class, 'destroy']);
 });

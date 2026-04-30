@@ -25,6 +25,14 @@ class User extends Authenticatable
         'role',
     ];
 
+    /** 
+     * Relacion con tabla orders
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

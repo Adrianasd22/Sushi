@@ -11,6 +11,15 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+
+/**
+ * Hay un little problema.
+ * En UserController, los roles no estan declarados como guest o auth,
+ * sino como admin, worker y user. Esto es lo que hace que al hacer un registro
+ * te de un error 401 No autorizado.
+ * La solucion seria cambiarlo o aqui o en UserController pero claro, en la BBDD
+ * no estamos guardando el rol de los usuarios, entonces no estoy seguro de como hacerlo.
+ */
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
