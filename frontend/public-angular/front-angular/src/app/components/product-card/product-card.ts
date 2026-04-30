@@ -14,11 +14,8 @@ export class ProductCard {
 
   product = input.required<Product>();
 
-
-  // allergenColors: Record<string, string> = {
-  //   GLUTEN: '#E8C547',
-  //   CRUSTACEOS: '#D95D39',
-  //   HUEVOS: '#F4A261',
-  //   PESCADO: '#457B9D',
-  // };
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'http://localhost:8080/storage/NoImage.png';
+  }
 }

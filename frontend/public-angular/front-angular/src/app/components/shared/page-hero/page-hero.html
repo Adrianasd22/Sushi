@@ -1,0 +1,19 @@
+<section class="hero">
+
+  <!-- Imagen de fondo -->
+  <div 
+    class="hero__bg"
+    [style.backgroundImage]="'url(image())'"
+  ></div>
+
+  <!-- Overlay oscuro -->
+  <div class="hero__overlay"></div>
+
+  <!-- Contenido -->
+  <div class="hero__content">
+    <h1 class="hero__title">
+      {{ title() }}
+    </h1>
+  </div>
+
+</section>

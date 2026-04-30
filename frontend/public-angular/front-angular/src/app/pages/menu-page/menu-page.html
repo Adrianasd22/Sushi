@@ -1,24 +1,43 @@
+<page-hero title="Carta" image="../../../images/interiorCocinero.png" />
 
-Menu
+@if(loading()){
+<div class="state state--loading">
+    <div class="loader"></div>
+    <!-- <img src="../../images/FoodPrepared.gif" alt="Cargando..." /> -->
+    <p>Preparando platos...</p>
+</div>
 
-<hr>
+}@else if(error()){
+<div class="state state--error">
+    <p>🍣 No se pudieron cargar los platos</p>
+    <span>Inténtalo de nuevo más tarde</span>
+  </div>
+}@else {
+<section class="filters">
+
+    <!-- CATEGORÍAS -->
+    <div class="filters__categories">
+        @for (cat of categories(); track cat.id) {
+        <button class="filters__btn" [class.active]="selectedCategory() === cat.id" (click)="selectCategory(cat.id)">
+            {{ cat.name }}
+        </button>
+        }
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="filters__search">
+        <input type="text" placeholder="Buscar plato..." (input)="updateSearch($any($event.target).value)" />
+    </div>
+
+</section>
 
 <div class="container">
 
     <div class="menu__grid">
         @for (product of products(); track product.id) {
-            <category-section [products]="[product]" [title]="product.category.name"/>
+        <category-section [products]="[product]" [title]="product.category.name" />
         }
-        
     </div>
 
-    <!-- <div class="menu__grid">
-        @for (category of groupedProducts(); track category) {
-            <category-section [products]="category.products" [title]="category.name"/>
-        }
-        
-    </div> -->
 </div>
-
-
-
+}
