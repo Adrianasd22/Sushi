@@ -54,8 +54,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
-
     //Rutas de pedidos
     Route::get('orders',          [OrderController::class, 'index']);
     Route::get('orders/{id}',     [OrderController::class, 'show']);

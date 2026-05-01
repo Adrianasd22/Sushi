@@ -1,6 +1,13 @@
-<h1>{{ title() }}</h1>
-<div>
+<section class="category">
+
+  <h2 class="category__title">
+    {{ title() }}
+  </h2>
+
+  <div class="category__grid">
     @for (item of products(); track item.id) {
-        <product-card [product]="item"/>
+      <product-card [product]="item"/>
     }
-</div>
+  </div>
+
+</section>
