@@ -1,17 +1,9 @@
-import { Product } from './../../interfaces/product.interface';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ProductCard } from '../../components/product-card/product-card';
 import { ProductService } from '../../services/product.service';
-import { CategorySection } from '../../components/category-section/category-section';
 import { PageHero } from '../../components/shared/page-hero/page-hero';
 import { Category } from '../../interfaces/category.interface';
 import { TitleCasePipe } from '@angular/common';
-import { Observable } from 'rxjs';
-// const Products: Product[] =  [
-//   { id: 1, name: 'Ramen', description: 'Tomate un rico ramen', price: 14.50 , category: 'Ramen', image: '/products/ramen.png'},
-//   { id: 2, name: 'Niguiri', description: 'Tomate un rico ramen', price: 3.50 , category: 'Ramen', image: '/products/ramen.png'},
-//   { id: 3, name: 'Fideos', description: 'Tomate un rico ramen', price: 17.00 , category: 'Ramen', image: '/products/ramen.png'},
-// ];
 
 @Component({
   selector: 'app-menu-page',
@@ -20,75 +12,91 @@ import { Observable } from 'rxjs';
   styleUrl: './menu-page.scss',
 })
 export class MenuPage {
+
+  // ============================
+  // 🔧 INYECCIONES
+  // ============================
   productService = inject(ProductService);
 
-  // 🔹 Mock categorías (luego vendrán del backend)
-  // categories = signal<Category[]>([
-  //   { id: 1, name: 'Todos' },
-  //   { id: 2, name: 'Sushi' },
-  //   { id: 3, name: 'Ramen' },
-  //   { id: 4, name: 'Entrantes' },
-  //   { id: 5, name: 'Postres' },
-  // ]);
-
-  // Señal local que refleja los productos
+  // ============================
+  // 📦 STATE GLOBAL (service)
+  // ============================
   products = this.productService.products;
   categories = this.productService.categories;
+  categoriesWithProducts = this.productService.categoriesWithProducts;
+
+  // ============================
+  // 🧠 STATE LOCAL
+  // ============================
+
+  searchTerm = signal('');
+  selectedCategory = signal<number>(0); // 👈 0 = "Todos"
+
+  loading = signal(true);
+  error = signal(false);
+
+  initialized = signal(false); // 👈 evita filtrado antes de cargar
+
+  // ============================
+  // 🧠 COMPUTED
+  // ============================
+
   categoriesWithAll = computed(() => [
     { id: 0, name: 'Todos' },
     ...this.categories()
   ]);
-  categoriesWithProducts = this.productService.categoriesWithProducts;
 
-  searchTerm = signal('');
-  selectedCategory = signal<number>(1);
-
-  //Carga de datos
-  loading = signal(true);
-  error = signal(false);
   isFiltering = computed(() => {
     return this.selectedCategory() !== 0 || this.searchTerm().trim().length > 0;
   });
 
+  // ============================
+  // 🚀 INIT
+  // ============================
+
   constructor() {
-    // Cargar productos al iniciar
+
     this.loading.set(true);
 
+    // 🔹 1. Cargar categorías (botones)
     this.productService.loadCategories().subscribe();
+    this.productService.loadProducts().subscribe();
 
+    // 🔹 2. Cargar productos (IndexedDB o API)
+    this.productService.loadCategoriesWithProducts().subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.initialized.set(true);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+      }
+    });
+
+    // 🔹 3. FILTRADO LOCAL (reactivo)
     effect(() => {
-      console.log('Productos actuales:', this.products());
-      this.loading.set(false);
+
+      if (!this.initialized()) return;
+
+      const category = this.selectedCategory();
+      const search = this.searchTerm();
+
+      this.productService.filterLocal(category, search);
+
     });
 
     effect(() => {
-      const category = this.selectedCategory();
-      const search = this.searchTerm();
-      
-      this.loading.set(true);
-      this.error.set(false);
-      
-      let request: Observable<any>;
-
-      if ((category === 0 || category == null) && !search) {
-        request = this.productService.loadCategoriesWithProducts();
-      } else {
-        request = this.productService.loadFilteredProducts(category, search);
-      }
-
-      request.subscribe({
-        next: () => this.loading.set(false),
-        error: () => {
-          this.loading.set(false);
-          this.error.set(true);
-        },
-      });
+      console.log('ALL PRODUCTS:', this.productService['allProducts']());
+      console.log('FILTERED:', this.products());
     });
 
   }
-  
 
-  // 🔹 Acciones
+  // ============================
+  // 🎯 ACCIONES
+  // ============================
+
   selectCategory(id: number) {
     this.selectedCategory.set(id);
   }
@@ -96,4 +104,5 @@ export class MenuPage {
   updateSearch(value: string) {
     this.searchTerm.set(value);
   }
+
 }
