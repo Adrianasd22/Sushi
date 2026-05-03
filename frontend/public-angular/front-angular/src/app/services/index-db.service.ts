@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class IndexedDbService {
   private dbName = 'sushiDB';
-  private dbVersion = 2;
+  private dbVersion = 3;
 
   private openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
@@ -23,6 +23,9 @@ export class IndexedDbService {
 
         if (!db.objectStoreNames.contains('categoriesWithProducts')) {
           db.createObjectStore('categoriesWithProducts', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('order')) {
+          db.createObjectStore('order', { keyPath: 'id' });
         }
       };
 
@@ -57,5 +60,28 @@ export class IndexedDbService {
     const db = await this.openDB();
     const tx = db.transaction(storeName, 'readwrite');
     tx.objectStore(storeName).clear();
+  }
+  async putOne(storeName: string, item: any): Promise<void> {
+    const db = await this.openDB();
+
+    return new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put(item); // 👈 upsert por keyPath (id)
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async deleteOne(storeName: string, id: number): Promise<void> {
+    const db = await this.openDB();
+
+    return new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).delete(id);
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
   }
 }
