@@ -13,6 +13,8 @@ import { ToastProvider } from "./components/context/ToastContext.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ProtectedRoute from "./components/login/ProtectedRoute.tsx";
 import AdminRoute from "./components/login/AdminRoute.tsx";
+import CategoryFormPage from "./pages/CategoryFormPage.tsx";
+import UserFormPage from "./pages/UserFormPage.tsx";
 
 function App() {
   return (
@@ -26,15 +28,20 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
-            <Route path="/products/new" element={<ProductFormPage />} />
-            <Route path="/products/:id/edit" element={<ProductFormPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
-            <Route path="/users" element={<UsersPage />} />
             <Route path="/tables" element={<TablesPage />} />
             <Route path="/tables-map" element={<RestaurantMapPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="*" element={<NotFoundPage />} />
+
             <Route element={<AdminRoute/>}>
+              <Route path="/users"element={<UsersPage />} />
+              <Route path="/products/new" element={<ProductFormPage />} />
+              <Route path="/categories/new" element={<CategoryFormPage />} />
+              <Route path="/users/new" element={<UserFormPage />} />
+              <Route path="/products/:id/edit" element={<ProductFormPage />} />
+              <Route path="/categories/:id/edit" element={<CategoryFormPage />} />
+              <Route path="/users/:id/edit" element={<UserFormPage />} />
 
             </Route>
           </Route>
