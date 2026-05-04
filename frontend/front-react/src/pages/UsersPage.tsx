@@ -10,7 +10,7 @@ function UsersPage() {
       </h1>
 
       {/* Listado */}
-      <div className="bg-zinc-900 rounded-md divide-y divide-zinc-800">
+      <div className=" rounded-md divide-y divide-zinc-800">
         {mockUsers.map(user => (
           <UserItem
             key={user.id}
