@@ -1,0 +1,90 @@
+<div class="order">
+
+    <!-- 🧾 FORM -->
+    <div class="order__form">
+
+        <!-- Toggle pegado arriba -->
+        <div class="order__toggle">
+            <button [class.active]="mode() === 'pickup'" (click)="setMode('pickup')">
+                Para recoger
+            </button>
+
+            <button [class.active]="mode() === 'delivery'" (click)="setMode('delivery')">
+                Para llevar
+            </button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submitOrder()">
+            <div class="order__form-body">
+
+                <div class="order__inputs">
+
+                    @if (mode() === 'pickup') {
+                    <!-- <input  type="text" placeholder="Nº Campanillas"> -->
+                    <input formControlName="bellNumber" type="text" placeholder="Teléfono">
+                    @if (isInvalid('bellNumber')) {
+                    <span class="error">El número de contacto es obligatorio</span>
+                    }
+                    }
+
+                    @if (mode() === 'delivery') {
+                    <input formControlName="address" type="text" placeholder="Dirección">
+                    @if (isInvalid('address')) {
+                    <span class="error">La dirección es obligatoria</span>
+                    }
+                    <input formControlName="phone" type="text" placeholder="Teléfono">
+                    @if (isInvalid('phone')) {
+                    <span class="error">Introduce un teléfono válido (9 dígitos)</span>
+                    }
+                    }
+
+                    <textarea formControlName="note" placeholder="Escribir una nota..."></textarea>
+                </div>
+
+                <div class="order__actions">
+                    <div class="order__total">
+                        <span>Total:</span>
+                        <strong>{{ total() }} €</strong>
+                    </div>
+
+                    <div class="order__buttons">
+                        <button class="btn btn--ghost">Ver carta</button>
+                        <button type="submit" class="btn btn--primary">Pagar</button>
+                    </div>
+                </div>
+
+            </div>
+            
+        </form>
+    </div>
+
+        <!-- 🧾 TICKET -->
+        <div class="order__ticket">
+
+            <h2>Tu pedido:</h2>
+
+            <div class="order__items">
+                @for (item of items(); track $index) {
+                <div class="order__item">
+                    <!-- <img [src]="item.image" alt=""> -->
+
+                    <div class="order__info">
+                        <span class="desc">{{ item.quantity }} x </span>
+                        <span class="name">{{ item.name }}</span>
+                    </div>
+
+                    <div class="order__price">
+                        {{ item.price }} €
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="order__ticket-footer">
+                <span>Total:</span>
+                <strong>{{ total() }} €</strong>
+            </div>
+
+        </div>
+
+    </div>

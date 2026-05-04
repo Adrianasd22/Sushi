@@ -11,14 +11,18 @@
 <div class="state state--error">
     <p>🍣 No se pudieron cargar los platos</p>
     <span>Inténtalo de nuevo más tarde</span>
-  </div>
+</div>
 }@else {
 <section class="filters">
 
     <!-- CATEGORÍAS -->
     <div class="filters__categories">
-        @for (cat of categories(); track cat.id) {
-        <button class="filters__btn" [class.active]="selectedCategory() === cat.id" (click)="selectCategory(cat.id)">
+        @for (cat of categoriesWithAll(); track cat.id) {
+        <button 
+            class="filters__btn" 
+            [class.active]="selectedCategory() === cat.id" 
+            (click)="selectCategory(cat.id)"
+        >
             {{ cat.name }}
         </button>
         }
@@ -31,13 +35,40 @@
 
 </section>
 
-<div class="container">
+<!-- Si esta filtrando lo muestra sin la categoria -->
+@if (!isFiltering()) {
 
-    <div class="menu__grid">
-        @for (product of products(); track product.id) {
-        <category-section [products]="[product]" [title]="product.category.name" />
+  <!-- 🟢 MODO NORMAL (categorías) -->
+
+    @for (cat of categoriesWithProducts(); track cat.id) {
+      <div class="container">
+        <h1>{{cat.name | titlecase}}</h1>
+        <hr>
+        <div class="menu__grid">
+        @for (product of cat.products; track product.id) {
+            <product-card [product]="product" />
         }
+        </div>
     </div>
+      
+        <!-- <category-section 
+            [title]="cat.name" 
+            [products]="cat.products" 
+        /> -->
+    }
 
-</div>
+} @else {
+
+  <!-- 🔴 MODO FILTRO (SIN categorías) -->
+  <div class="container">
+    <div class="menu__grid">
+      @for (product of products(); track product.id) {
+        <product-card [product]="product" />
+      }
+    </div>
+  </div>
+
+}
+
+
 }

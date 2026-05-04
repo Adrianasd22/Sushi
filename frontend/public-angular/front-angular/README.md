@@ -18,7 +18,7 @@ src/app/
 │
 ├── pages/                  # Páginas completas (una por ruta)
 │   ├── home-page/          # Página de inicio 
-│   ├── menu-page/          # Página del menú (carga productos desde API (todavia no :( ))
+│   ├── menu-page/          # Página del menú
 │   ├── login-page/         # Formulario de inicio de sesión
 │   ├── register-page/      # Formulario de registro
 │   └── error404-page/      # Página de error para rutas no encontradas

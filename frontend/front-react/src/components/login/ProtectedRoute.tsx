@@ -1,15 +1,21 @@
-import type { ReactNode } from 'react';
+import { Navigate, Outlet } from "react-router-dom";
+import Sidebar from "../sidebar/Sidebar";
 
-// ✅ Tipar children correctamente
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const token = localStorage.getItem('auth_token');
+function isAuthenticated(): boolean {
+  return Boolean(localStorage.getItem("auth_token"));
+}
 
-  if (!token) {
-    window.location.href = 'http://localhost:8080/login';
-    return null;
+export default function ProtectedRoute() {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
-};
-
-export default ProtectedRoute;
+  return (
+    <div className="flex h-screen overflow-hidden bg-zinc-950 text-zinc-100">
+      <Sidebar />
+      <main className="flex-1 p-6 overflow-auto">
+        <Outlet />
+      </main>
+    </div>
+  );
+}

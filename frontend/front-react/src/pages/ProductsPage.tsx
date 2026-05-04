@@ -1,85 +1,83 @@
-import { useState, useEffect } from "react"
-import ProductItem from "../components/products/ProductItem"
-// import { mockProducts } from "../components/products/mockProducts"
-import type { Product } from "../types/products"
-import ProductSkeleton from "../components/products/ProductSkeleton"
-import { getProducts } from "../services/productService"
-import type { Category } from "../types/category"
-import { getCategories } from "../services/CategoryService"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { getProducts } from "../services/productService";
+import { getCategories } from "../services/CategoryService";
+import type { Category } from "../types/category";
+import type { Product, ProductFilters } from "../types/products";
+import ProductSkeleton from "../components/products/ProductSkeleton";
+import ProductItem from "../components/products/ProductItem";
+import { useRole } from "../hooks/useRole";
 
-function ProductsPage() {
+export default function ProductsPage() {
+  const navigate = useNavigate();
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-
-  const [loadingProducts, setLoadingProducts] = useState(true)
-  const [loadingCategories, setLoadingCategories] = useState(true)
-
-  const [search, setSearch] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setLoadingCategories(true)
-      const data = await getCategories()
-      setCategories(data)
-      setLoadingCategories(false)
-    }
-
-    fetchCategories()
-  }, [])
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const role = useRole();
+  const isAdmin = role === "admin";
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoadingProducts(true)
-      const data = await getProducts({
-        search,
-        category_id: selectedCategory ? Number(selectedCategory) : undefined ////Creo q esta mal
-      })
-      setProducts(data)
-      setLoadingProducts(false)
-    }
+    getCategories()
+      .then(setCategories)
+      .finally(() => setLoadingCategories(false));
+  }, []);
 
-    fetchData()
-  }, [search, selectedCategory])
+  useEffect(() => {
+    const filters: ProductFilters = {};
+    if (search) filters.search = search;
+    if (selectedCategory) filters.category_id = Number(selectedCategory);
+
+    const promise = getProducts(filters);
+
+    promise.then((data) => {
+      setProducts(data);
+      setLoadingProducts(false);
+    });
+  }, [search, selectedCategory]);
 
   return (
     <div className="space-y-6 max-w-4xl">
-      {/* Título */}
-      <h1 className="text-2xl font-semibold">Productos</h1>
+      {/* Cabecera */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-zinc-100">Productos</h1>
 
-    <div className="flex flex-col">
-      {/* Barra de acciones */}
+        {isAdmin && (
+          <button
+            onClick={() => navigate("/products/new")}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md bg-zinc-100 text-zinc-900 text-sm font-medium hover:bg-white transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nuevo producto
+          </button>
+        )}
+      </div>
+
+      {/* Filtros */}
       <div className="flex gap-4">
         <input
           type="text"
           placeholder="Buscar producto..."
           value={search}
-          onChange={(e)=>setSearch(e.target.value)}
-          className="
-            flex-1 px-4 py-2 rounded-md
-            bg-zinc-800 text-zinc-100
-            placeholder:text-zinc-500
-            focus:outline-none focus:ring-1 focus:ring-zinc-600
-          "
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-600"
         />
-
         <select
           value={selectedCategory}
-          onChange={(e)=>setSelectedCategory(e.target.value)}
+          onChange={(e) => setSelectedCategory(e.target.value)}
           disabled={loadingCategories}
-          className="
-            px-4 py-2 rounded-md
-            bg-zinc-800 text-zinc-100
-            focus:outline-none
-          "
+          className="px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 focus:outline-none disabled:opacity-50"
         >
           {loadingCategories ? (
             <option>Cargando categorías...</option>
           ) : (
             <>
               <option value="">Todas las categorías</option>
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
                 </option>
@@ -89,31 +87,14 @@ function ProductsPage() {
         </select>
       </div>
 
-      {/* Listado */}
-      {/* <div className="bg-zinc-900 rounded-md divide-y divide-zinc-800 sflex flex-col">
-        {mockProducts.map(product => (
-          <ProductItem
-            key={product.id}
-            product={product}
-          />
-        ))}
-      </div> */}
-
-        {/* LISTA de productos*/}
-        <div className=" rounded-md divide-y divide-zinc-800 flex flex-col">
-          {loadingProducts
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <ProductSkeleton key={i} />
-              ))
-            : products.map(product => (
-                <ProductItem key={product.id} product={product} />
-              ))
-          }
-        </div>
-
+      {/* Lista */}
+      <div className="rounded-md divide-y divide-zinc-800 flex flex-col">
+        {loadingProducts
+          ? Array.from({ length: 5 }).map((_, i) => <ProductSkeleton key={i} />)
+          : products.map((product) => (
+              <ProductItem key={product.id} product={product} />
+            ))}
       </div>
     </div>
-  )
+  );
 }
-
-export default ProductsPage

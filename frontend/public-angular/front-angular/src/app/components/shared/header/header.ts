@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from
 import { Logo } from "../logo/logo";
 import { MenuService } from '../../../services/menu.service';
 import { Sidenavbar } from "./sidenavbar/sidenavbar";
+import { OrderService } from '../../../services/order.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -11,24 +13,18 @@ import { Sidenavbar } from "./sidenavbar/sidenavbar";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
+  private router = inject(Router);
+  goToOrder() {
+    this.router.navigate(['/order']);
+  }
+
+  orderService = inject(OrderService);
+  totalItems = this.orderService.totalItems;
 
   showLangOptions = signal(false);
   currentLang = signal('ES');
 
-  /**
-   * MENU SIDENAVBAR
-   */
-  
   menuService = inject(MenuService);
-
-  // scrolled = signal(false);
-  // @HostListener('window:scroll')
-  // onScroll() {
-  //     this.scrolled.set(window.scrollY > 0);
-  // }
-
-
-
   
   /**
    * IDIOMAS

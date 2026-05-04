@@ -13,9 +13,11 @@
     </div>
     
     <div class="header__right">
-        <button class="header__icon-btn header__cart" aria-label="Ver pedido">
+        <button (click)="goToOrder()" class="header__icon-btn header__cart" aria-label="Ver pedido">
             🛒
-            <span class="header__cart-count">2</span>
+            @if (totalItems() > 0) {
+                <span class="header__cart-count">{{totalItems()}}</span>
+            }
         </button>
         <!-- Selector idioma -->
         <div class="header__lang">
