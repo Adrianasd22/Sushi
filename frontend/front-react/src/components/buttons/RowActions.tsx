@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 interface RowActionsProps {
   onView?: () => void
