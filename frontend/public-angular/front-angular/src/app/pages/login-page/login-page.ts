@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-login-page',
@@ -11,31 +11,30 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LoginPage {
 
+  apiUrl = 'http://localhost:8080/api/login';
   email = signal('');
   password = signal('');
 
-  constructor(private http: HttpClient) { }
+  constructor(private loginService: LoginService) { }
 
   onLogin() {
 
-    const data = {
+    const credentials = {
       email: this.email(),
-      password: this.password(),
+      password: this.password()
     };
 
-    this.http.post('http://localhost:8080/api/login', data).subscribe({
-      next: (response: any) => {
-        console.log("Respuesta del servidor:", response.mensaje)
-        localStorage.setItem('auth_token', response.access_token);
+    this.loginService.login(credentials).subscribe({
+      next: (response) => {
 
-      //Aqui se añade la redireccion del usuario
+      // Redireccionar a la página de inicio después del login exitoso
+      window.location.href = 'http://localhost:5173';
 
       },
-      error: (error) => {
-        console.error("Error del login: ", error);
-        alert(error.error.mensaje || 'Error al iniciar sesion');
+      error: (err) => {
+        console.error('Error de login', err);
+        alert('Error de login: ' + (err.error?.message || 'Error desconocido'));
       }
     });
-
   } 
 }

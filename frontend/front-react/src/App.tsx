@@ -12,6 +12,7 @@ import CategoriesPage from "./pages/CategoriesPage.tsx";
 import ProductFormPage from "./pages/ProductFormPage.tsx";
 import ToastContainer from "./components/context/ToastContainer.tsx";
 import { ToastProvider } from "./components/context/ToastContext.tsx";
+import ProtectedRoute from "./components/login/ProtectedRoute.tsx";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         {/* Aquí irá el contenido de cada página */}
         <ToastProvider>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/new" element={<ProductFormPage />} />
             <Route path="/products/:id/edit" element={<ProductFormPage />} />
