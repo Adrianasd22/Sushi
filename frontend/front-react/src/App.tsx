@@ -11,7 +11,6 @@ import CategoriesPage from "./pages/CategoriesPage.tsx";
 import ProductFormPage from "./pages/ProductFormPage.tsx";
 import { ToastProvider } from "./components/context/ToastContext.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
-import ProtectedRoute from "./components/login/ProtectedRoute.tsx";
 import AdminRoute from "./components/login/AdminRoute.tsx";
 import CategoryFormPage from "./pages/CategoryFormPage.tsx";
 import UserFormPage from "./pages/UserFormPage.tsx";
@@ -19,36 +18,33 @@ import ProtectedRoute from "./components/login/ProtectedRoute.tsx";
 
 function App() {
   return (
-    <>
-      {/* Aquí irá el contenido de cada página */}
-      <ToastProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
+    <ToastProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
 
-          {/* Rutas protegidas con sidebar */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-            <Route path="/products" element={<ProductsPage />} />
-            <Route path="/categories" element={<CategoriesPage />} />
-            <Route path="/tables" element={<TablesPage />} />
-            <Route path="/tables-map" element={<RestaurantMapPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-            <Route path="*" element={<NotFoundPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/tables" element={<TablesPage />} />
+          <Route path="/tables-map" element={<RestaurantMapPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
 
-            <Route element={<AdminRoute/>}>
-              <Route path="/users"element={<UsersPage />} />
-              <Route path="/products/new" element={<ProductFormPage />} />
-              <Route path="/categories/new" element={<CategoryFormPage />} />
-              <Route path="/users/new" element={<UserFormPage />} />
-              <Route path="/products/:id/edit" element={<ProductFormPage />} />
-              <Route path="/categories/:id/edit" element={<CategoryFormPage />} />
-              <Route path="/users/:id/edit" element={<UserFormPage />} />
-
-            </Route>
+          <Route element={<AdminRoute />}>
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/products/new" element={<ProductFormPage />} />
+            <Route path="/categories/new" element={<CategoryFormPage />} />
+            <Route path="/users/new" element={<UserFormPage />} />
+            <Route path="/products/:id/edit" element={<ProductFormPage />} />
+            <Route path="/categories/:id/edit" element={<CategoryFormPage />} />
+            <Route path="/users/:id/edit" element={<UserFormPage />} />
           </Route>
-        </Routes>
-      </ToastProvider>
-    </>
+        </Route>
+
+        {/* Fuera de ProtectedRoute para que cualquiera vea el 404 */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </ToastProvider>
   );
 }
 
