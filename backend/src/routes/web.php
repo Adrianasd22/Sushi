@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,7 +12,10 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'totalProducts'   => Product::count(),
+        'totalCategories' => Category::count(),
+    ]);
 })->middleware(['auth', 'verified', 'role:admin'])->name('dashboard');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
