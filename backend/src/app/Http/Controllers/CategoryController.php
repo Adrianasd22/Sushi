@@ -2,18 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        // Cargar categorías con sus productos
-        // $categories = Category::with('products')->get();
-        $categories = Category::all();
+        $categories = Category::withCount('products')->get(); // muestra el contador en la blade
+        return view('categories.index', compact('categories'));
+    }
 
-        // Enviar los datos a la vista
-        return view('categories.index', ['categories' => $categories]);
+    public function create()
+    {
+        return view('categories.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+        Category::create($validated);
+        return redirect()->route('categories.index')
+            ->with('success', 'Categoría creada correctamente.');
+    }
+
+    public function edit(Category $category)
+    {
+        $category->loadCount('products'); // para el aviso de la blade de edición
+        return view('categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, Category $category)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+        $category->update($validated);
+        return redirect()->route('categories.index')
+            ->with('success', 'Categoría actualizada correctamente.');
+    }
+
+    public function destroy(Category $category)
+    {
+        $category->delete();
+        return redirect()->route('categories.index')
+            ->with('success', 'Categoría eliminada.');
     }
 }
