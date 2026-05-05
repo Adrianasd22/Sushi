@@ -31,6 +31,9 @@ export class RegisterPage {
         .subscribe({
             next: (res) => {
                 console.log('Registro exitoso:', res);
+                alert('Registro exitoso. Ahora puedes iniciar sesión.');
+                // Redireccionar a la página de login después del registro exitoso
+                window.location.href = 'http://localhost:4200/login';
             },
             error: (err) => {
                 console.error('Error en el registro:', err);

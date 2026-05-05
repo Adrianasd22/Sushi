@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       const { access_token, user } = await loginUser(form.email, form.password);
 
-      localStorage.setItem("token", access_token);
+      localStorage.setItem("auth_token", access_token);
       localStorage.setItem("name", user.name );
       localStorage.setItem("role", user.role); // lo usarás para el CRUD de admin
         console.log("Ha sido autenticado como: ", user.role);
