@@ -34,18 +34,16 @@ export class IndexedDbService {
     });
   }
 
-  async getAll(storeName: string): Promise<any[]> {
-    const db = await this.openDB();
-
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const request = store.getAll();
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
+  async getAll<T = any>(storeName: string): Promise<T[]> {
+  const db = await this.openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result as T[]);
+    request.onerror = () => reject(request.error);
+  });
+}
 
   async saveAll(storeName: string, data: any[]) {
     const db = await this.openDB();

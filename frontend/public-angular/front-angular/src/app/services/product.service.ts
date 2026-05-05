@@ -22,7 +22,7 @@ export class ProductService {
   categoriesWithProducts = signal<CategoryWithProducts[]>([]);
 
   loadCategoriesWithProducts() {
-    return from(this.db.getAll('categoriesWithProducts')).pipe(
+    return from(this.db.getAll<CategoryWithProducts>('categoriesWithProducts')).pipe(
       switchMap((cached) => {
         if (cached.length > 0) {
           console.log('Cargando categoriesWithProducts desde IndexedDB');
@@ -30,7 +30,11 @@ export class ProductService {
           this.categoriesWithProducts.set(cached);
 
           // reconstruimos products desde cache
-          const allProducts = cached.flatMap((cat) => cat.products);
+          //const allProducts = cached.flatMap((cat) => cat.products);
+          const allProducts = cached.flatMap((cat) =>
+            cat.products.map((prod) => ({ ...prod, category_id: cat.id }))
+          );
+          
           this.products.set(allProducts);
           this.allProducts.set(allProducts);
 
@@ -54,7 +58,12 @@ export class ProductService {
 
             tap(async (categories) => {
               this.categoriesWithProducts.set(categories);
-              const allProducts = categories.flatMap((cat) => cat.products);
+              const allProducts = categories.flatMap((cat) => 
+                cat.products.map((prod) => ({
+                  ...prod,
+                  category_id: cat.id,
+                  }))
+                );
               this.products.set(allProducts);
               this.allProducts.set(allProducts);
 
@@ -117,8 +126,7 @@ export class ProductService {
 
     // categoría
     if (category && category !== 0) {
-      filtered = filtered.filter((p) => p.category?.id == category);
-    }
+    filtered = filtered.filter((p) => p.category_id == category);    }
 
     // búsqueda
     if (search && search.trim() !== '') {
@@ -126,7 +134,6 @@ export class ProductService {
 
       filtered = filtered.filter((p) => p.name.toLowerCase().includes(term));
     }
-
     this.products.set(filtered);
   }
 
