@@ -19,7 +19,7 @@ function SidebarNav({collapsed}:SidebarNavProps) {
       {isAdmin && (
         <>
           <SidebarNavItem icon={Users} label="Usuarios" to="/users" collapsed={collapsed}/>
-          <SidebarNavItem icon={LineChart} label="Ventas" to="/ventas_ingresos" collapsed={collapsed}/>
+          <SidebarNavItem icon={LineChart} label="Ventas" to="/sales" collapsed={collapsed}/>
           <SidebarNavItem icon={LayoutGrid} label="Lista mesas" to="/tables-list" collapsed={collapsed}/>
           <SidebarNavItem icon={ClipboardList} label="Lista pedidos" to="/order-list" collapsed={collapsed}/>
         </>

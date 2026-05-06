@@ -14,6 +14,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import AdminRoute from "./components/login/AdminRoute.tsx";
 import CategoryFormPage from "./pages/CategoryFormPage.tsx";
 import UserFormPage from "./pages/UserFormPage.tsx";
+import SalesPage from "./pages/SalesPage.tsx";
 import ProtectedRoute from "./components/login/ProtectedRoute.tsx";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/orders" element={<OrdersPage />} />
 
           <Route element={<AdminRoute />}>
+              <Route path="/sales" element={<SalesPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/products/new" element={<ProductFormPage />} />
             <Route path="/categories/new" element={<CategoryFormPage />} />
