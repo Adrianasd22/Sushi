@@ -358,11 +358,11 @@ class ProductSeeder extends Seeder
             'image' => 'products/cerveza-normal.png',
         ]);
         Product::create([
-            'name' => 'Cerveza Japosesa',
+            'name' => 'Cerveza Japosnesa',
             'description' => 'Cerveza tradicional japonesa.',
             'price' => 1.50,
             'category_id' => 13,
-            'image' => 'products/cerveza-japosesa.png',
+            'image' => 'products/cerveza-japonesa.png',
         ]);
         Product::create([
             'name' => 'Melon Soda',

@@ -86,11 +86,6 @@ export class MenuPage {
 
     });
 
-    effect(() => {
-      console.log('ALL PRODUCTS:', this.productService['allProducts']());
-      console.log('FILTERED:', this.products());
-    });
-
   }
 
   // ============================

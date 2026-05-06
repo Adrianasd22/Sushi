@@ -6,13 +6,24 @@
   >+</button>
   <!-- Imagen fondo -->
   <div class="card__image">
+  @if (!imageError()) {
     <img 
-      src="{{product().image}}" 
-      alt="{{product().name}}" 
+      [src]="product().image" 
+      [alt]="product().name" 
       class="bg-img"
-      (error)="onImageError($event)"
+      (error)="onImageError()"
     >
-  </div>
+  } @else {
+    <!-- Fallback SVG inline — nunca da 404 ni CORS -->
+    <div class="bg-img card__no-image">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>`
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+    </div>
+  }
+</div>
 
   <!-- Overlay info -->
   <div class="card__content">
