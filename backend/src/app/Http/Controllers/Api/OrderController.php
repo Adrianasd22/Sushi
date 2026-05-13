@@ -39,10 +39,16 @@ class OrderController extends Controller
             'products'           => 'required|array|min:1',
             'products.*.id'      => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+            'phone'              => 'required|string',
+            'mode'              => 'required|in:pickup,delivery',
+            'note'              =>  'nullable|string',
         ]);
 
         $order = Order::create([
             'user_id' => $request->user()->id,
+            'phone' => $validated['phone'],
+            'note' => $validated['note'] ?? null,
+            'mode' => $validated['mode'],
         ]);
 
         $total = 0;

@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            //Cositas que añadir para meter los pedidos en la base de datos
+            //===========================
+            $table->enum('mode', ['pickup', 'delivery'])->default('pickup');
+            $table->string('phone');
+            $table->string('address')->nullable();
+            //===========================
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('total', 8, 2) ->default(0);
             $table->string('notes')->nullable();

@@ -23,12 +23,16 @@ Route::get('categories/{id}', [CategoryController::class, 'show']);
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
 
+//temp
+
 
 // ---- CON LOGIN (sea user o admin) ----
 Route::middleware('auth:sanctum')->group(function () {
     // Aqui van las rutas de post y get order por usuario
     // Ademas de crear reservar y ver sus reservas
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('orders', [OrderController::class, 'store']);
+
 });
 
 
@@ -57,7 +61,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     //Rutas de pedidos
     Route::get('orders',          [OrderController::class, 'index']);
     Route::get('orders/{id}',     [OrderController::class, 'show']);
-    Route::post('orders',         [OrderController::class, 'store']);
     Route::put('orders/{id}',     [OrderController::class, 'update']);
     Route::delete('orders/{id}',  [OrderController::class, 'destroy']);
 });

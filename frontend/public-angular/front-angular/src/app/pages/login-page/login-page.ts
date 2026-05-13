@@ -28,7 +28,9 @@ export class LoginPage {
       next: (response) => {
 
       // Redireccionar a la página de inicio después del login exitoso
-      window.location.href = 'http://localhost:5173';
+      // Temporalmente lo voy a quitar
+      //window.location.href = 'http://localhost:5173';
+      console.log("Respuesta: ", response);
 
       },
       error: (err) => {

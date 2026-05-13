@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
+import { HttpClient } from '@angular/common/http';
 import { OrderItem } from '../../interfaces/order.interface';
 
 @Component({
@@ -12,6 +13,7 @@ import { OrderItem } from '../../interfaces/order.interface';
 export class OrderPage implements OnInit {
   private orderService = inject(OrderService);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
 
   items = this.orderService.items;
   mode = signal<'pickup' | 'delivery'>('pickup');
@@ -30,8 +32,7 @@ export class OrderPage implements OnInit {
 
     // Delivery
     address: [''],
-    city: [''],
-    postalCode: ['', [Validators.pattern(/^\d{5}$/)]],
+    //postalCode: ['', [Validators.pattern(/^\d{5}$/)]],
   });
 
   async ngOnInit() {
@@ -67,15 +68,36 @@ export class OrderPage implements OnInit {
 
     if (this.form.invalid) return;
 
+    if(this.items().length === 0)
+    {
+      alert("Pedido sin productos. Por favor, introduzca algun producto en la cesta antes de hacer su pedido.");
+      return;
+    }
+
     const payload = {
       mode: this.mode(),
-      items: this.items(),
+      products: this.items(),
       total: this.total(),
       ...this.form.value,
     };
 
-    console.log('Pedido listo para enviar:', payload);
-    // this.http.post(...)
+    const token = localStorage.getItem('auth_token');
+
+    this.http.post('http://localhost:8080/api/orders', payload, {
+      headers: 
+      {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}})
+    .subscribe({
+      next: (res) => {
+        // Desarrollo
+        console.log("Pedido ingresado correctamente en la BBDD");
+        alert("Pedido creado correctamente. Gracias por su confianza.");
+        window.location.href = "http://localhost:4200";
+      },
+      error: (err) => {
+        console.log("Error guardando los datos. Intentalo de nuevo: ", err);
+      }
+    })
+
   }
 
   // Helper para el HTML
