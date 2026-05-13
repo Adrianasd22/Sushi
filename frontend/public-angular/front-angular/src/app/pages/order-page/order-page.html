@@ -19,23 +19,17 @@
 
                 <div class="order__inputs">
 
-                    @if (mode() === 'pickup') {
-                    <!-- <input  type="text" placeholder="Nº Campanillas"> -->
-                    <input formControlName="bellNumber" type="text" placeholder="Teléfono">
-                    @if (isInvalid('bellNumber')) {
-                    <span class="error">El número de contacto es obligatorio</span>
-                    }
-                    }
-
-                    @if (mode() === 'delivery') {
-                    <input formControlName="address" type="text" placeholder="Dirección">
-                    @if (isInvalid('address')) {
-                    <span class="error">La dirección es obligatoria</span>
-                    }
                     <input formControlName="phone" type="text" placeholder="Teléfono">
                     @if (isInvalid('phone')) {
                     <span class="error">Introduce un teléfono válido (9 dígitos)</span>
                     }
+
+
+                    @if (mode() === 'delivery') {
+                        <input formControlName="address" type="text" placeholder="Dirección">
+                            @if (isInvalid('address')) {
+                                <span class="error">La dirección es obligatoria</span>
+                            }
                     }
 
                     <textarea formControlName="note" placeholder="Escribir una nota..."></textarea>

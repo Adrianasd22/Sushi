@@ -37,6 +37,8 @@ export class OrderPage implements OnInit {
 
   async ngOnInit() {
     await this.orderService.loadItems();
+    this.resetValidators();
+
   }
 
   setMode(mode: 'pickup' | 'delivery') {
@@ -45,22 +47,15 @@ export class OrderPage implements OnInit {
   }
 
   private resetValidators() {
-    const { bellNumber, address} = this.form.controls;
+    const address = this.form.controls.address;
+    address.clearValidators();
 
-    // Limpia todos primero
-    [bellNumber, address].forEach(c => {
-      c.clearValidators();
-      c.updateValueAndValidity();
-    });
-
-    if (this.mode() === 'pickup') {
-      bellNumber.setValidators([Validators.required]);
-    } else {
+    if (this.mode() === 'delivery') {
       address.setValidators([Validators.required]);
     }
 
     // Reaplica
-    [bellNumber, address].forEach(c => c.updateValueAndValidity());
+    address.updateValueAndValidity();
   }
 
   submitOrder() {
