@@ -43,7 +43,7 @@
 
                     <div class="order__buttons">
                         <button class="btn btn--ghost">Ver carta</button>
-                        <button type="submit" class="btn btn--primary">Pagar</button>
+                        <button type="submit" class="btn btn--primary" [disabled]="isLoading">{{isLoading ? 'Procesando...' : 'Pagar'}}</button>
                     </div>
                 </div>
 

@@ -18,6 +18,9 @@ export class OrderPage implements OnInit {
   items = this.orderService.items;
   mode = signal<'pickup' | 'delivery'>('pickup');
 
+  //Variable para controlar la disponibilidad del boton
+  isLoading = false;
+
   total = computed(() =>
     this.items().reduce((acc, item) => acc + item.price * item.quantity, 0)
   );
@@ -63,9 +66,12 @@ export class OrderPage implements OnInit {
 
     if (this.form.invalid) return;
 
+    this.isLoading = true;
+
     if(this.items().length === 0)
     {
       alert("Pedido sin productos. Por favor, introduzca algun producto en la cesta antes de hacer su pedido.");
+      this.isLoading = false;
       return;
     }
 
@@ -94,6 +100,8 @@ export class OrderPage implements OnInit {
       },
       error: (err) => {
         console.log("Error guardando los datos. Intentalo de nuevo: ", err);
+        alert("Error guardando los datos. Intentalo de nuevo.");
+        this.isLoading = false;
       }
     })
 
