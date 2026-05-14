@@ -72,6 +72,8 @@ export class OrderPage implements OnInit {
     const payload = {
       mode: this.mode(),
       products: this.items(),
+      address: this.form.value.address,
+      notes: this.form.value.note,
       total: this.total(),
       ...this.form.value,
     };
