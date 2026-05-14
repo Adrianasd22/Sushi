@@ -4,6 +4,11 @@ $blanco:    var(--blanco);
 $neutro:    var(--neutro);
 $bordRad:   var(--borderRadius);
 $borderPx:  var(--borderPx);
+$fuente: var(--fuenteTextoDescripcion);
+
+*{
+  font-family: $fuente;
+}
 
 // ─── Hero wrapper ────────────────────────────────────────────────────────────
 

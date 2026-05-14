@@ -17,6 +17,7 @@ export class LoginService {
         // Guardamos el token automáticamente cuando la petición es exitosa
         if (response.access_token) {
           localStorage.setItem('auth_token', response.access_token);
+          localStorage.setItem('role', response.user.role);
         }
       })
     );

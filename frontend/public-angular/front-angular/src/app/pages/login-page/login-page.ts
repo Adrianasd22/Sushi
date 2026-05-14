@@ -26,12 +26,20 @@ export class LoginPage {
 
     this.loginService.login(credentials).subscribe({
       next: (response) => {
-
-      // Redireccionar a la página de inicio después del login exitoso
-      // Temporalmente lo voy a quitar
-      //window.location.href = 'http://localhost:5173';
-      console.log("Respuesta: ", response);
-
+      // Si el login es de admin, al dashboard
+      // Si el login es de usuario, al menu
+      if (response.user.role == 'admin') 
+      {
+        alert('Bienvenido administrador ' + response.user.name + '. Redirigiendo al dashboard...');
+        const token = response.access_token;
+        const role = response.user.role;
+        window.location.href = `http://localhost:5173?token=${token}&role=${role}`;
+      } else
+      {
+        alert('Bienvenido de vuelta, ' + response.user.name);
+        window.location.href = "http://localhost:4200/menu";
+      }
+      
       },
       error: (err) => {
         console.error('Error de login', err);
