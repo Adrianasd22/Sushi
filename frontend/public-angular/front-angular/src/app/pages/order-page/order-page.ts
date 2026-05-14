@@ -78,6 +78,8 @@ export class OrderPage implements OnInit {
       ...this.form.value,
     };
 
+    
+
     const token = localStorage.getItem('auth_token');
 
     this.http.post('http://localhost:8080/api/orders', payload, {
@@ -85,10 +87,10 @@ export class OrderPage implements OnInit {
       {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}})
     .subscribe({
       next: (res) => {
-        // Desarrollo
-        console.log("Pedido ingresado correctamente en la BBDD");
-        alert("Pedido creado correctamente. Gracias por su confianza.");
-        window.location.href = "http://localhost:4200";
+        this.orderService.clearOrder().then(() => {
+          alert("Pedido creado correctamente. Gracias por su confianza.");
+          window.location.href = "http://localhost:4200";
+        });
       },
       error: (err) => {
         console.log("Error guardando los datos. Intentalo de nuevo: ", err);
