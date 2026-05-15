@@ -15,7 +15,8 @@ class OrderController extends Controller
     //GET /api/orders
     public function index(Request $request)
     {
-        $orders = $request->user()->orders()->with('products')->get();
+        // $orders = $request->user()->orders()->with('products')->get();
+        $orders = Order::with('user', 'products')->get();
         return OrderResource::collection($orders);
     }
 
