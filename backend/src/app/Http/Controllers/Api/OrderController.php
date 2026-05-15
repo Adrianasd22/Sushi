@@ -110,6 +110,18 @@ class OrderController extends Controller
         ], 201);
     }
 
+    // PATCH /api/orders/{order}/status
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pendiente,en_curso,completado,cancelado',
+        ]);
+
+        $order->update($validated);
+
+        return response()->json(new OrderResource($order->load('user', 'products')));
+    }
+
 
     // DELETE /api/orders/{id}
     public function destroy(Request $request, string $id)

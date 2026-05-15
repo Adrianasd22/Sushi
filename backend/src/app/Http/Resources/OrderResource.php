@@ -16,6 +16,7 @@ class OrderResource extends JsonResource
             'phone'      => $this->phone,
             'notes'      => $this->notes,
             'total'      => $this->total,
+            'status'     => $this->status ?? 'pendiente',
 
             'user'       => $this->whenLoaded('user', fn() => [
                 'id'    => $this->user->id,

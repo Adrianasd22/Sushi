@@ -33,14 +33,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('orders', [OrderController::class, 'store']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
+    });
 
-});
 
-
-// ---- CON ROL WORKER O ADMIN ----
-Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
-    //Aqui van las rutas de poder ver las reservas y los pedidos
-    Route::get('orders', [OrderController::class, 'index']);
+    // ---- CON ROL WORKER O ADMIN ----
+    Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
+        //Aqui van las rutas de poder ver las reservas y los pedidos
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
 });
 
 
