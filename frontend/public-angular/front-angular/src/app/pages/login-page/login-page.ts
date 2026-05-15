@@ -16,6 +16,8 @@ export class LoginPage {
   password = signal('');
 
   constructor(private loginService: LoginService) { }
+  
+  redirect: (url: string) => void = (url: string) => { window.location.href = url; };
 
   onLogin() {
 
@@ -33,11 +35,11 @@ export class LoginPage {
         alert('Bienvenido administrador ' + response.user.name + '. Redirigiendo al dashboard...');
         const token = response.access_token;
         const role = response.user.role;
-        window.location.href = `http://localhost:5173?token=${token}&role=${role}`;
+        this.redirect(`http://localhost:5173?token=${token}&role=${role}`);
       } else
       {
         alert('Bienvenido de vuelta, ' + response.user.name);
-        window.location.href = "http://localhost:4200/menu";
+        this.redirect("http://localhost:4200/menu");
       }
       
       },
