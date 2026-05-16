@@ -32,13 +32,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ademas de crear reservar y ver sus reservas
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('orders', [OrderController::class, 'store']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+    });
 
-});
 
-
-// ---- CON ROL WORKER O ADMIN ----
-Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
-    //Aqui van las rutas de poder ver las reservas y los pedidos
+    // ---- CON ROL WORKER O ADMIN ----
+    Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
+        //Aqui van las rutas de poder ver las reservas y los pedidos
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
 });
 
 
@@ -59,8 +61,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     //Rutas de pedidos
-    Route::get('orders',          [OrderController::class, 'index']);
-    Route::get('orders/{id}',     [OrderController::class, 'show']);
     Route::put('orders/{id}',     [OrderController::class, 'update']);
     Route::delete('orders/{id}',  [OrderController::class, 'destroy']);
 });

@@ -15,7 +15,8 @@ class OrderController extends Controller
     //GET /api/orders
     public function index(Request $request)
     {
-        $orders = $request->user()->orders()->with('products')->get();
+        // $orders = $request->user()->orders()->with('products')->get();
+        $orders = Order::with('user', 'products')->get();
         return OrderResource::collection($orders);
     }
 
@@ -107,6 +108,18 @@ class OrderController extends Controller
             'mensaje' => 'Pedido actualizado con éxito',
             'data'    => new OrderResource($order->load('products'))
         ], 201);
+    }
+
+    // PATCH /api/orders/{order}/status
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pendiente,en_curso,completado,cancelado',
+        ]);
+
+        $order->update($validated);
+
+        return response()->json(new OrderResource($order->load('user', 'products')));
     }
 
 
