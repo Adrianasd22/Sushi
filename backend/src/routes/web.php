@@ -29,3 +29,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Redirigir /swagger a la UI estática dentro de public/swagger
+Route::get('/swagger', function () {
+    return redirect('/swagger/index.html');
+});
