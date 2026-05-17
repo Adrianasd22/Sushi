@@ -158,12 +158,33 @@ $borderPx: var(--borderPx);
 /* Social */
 .sidenav__social {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  justify-content: center;
+  gap: 1.2rem;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #dc2626; // rojo principal (tailwind red-600)
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #b91c1c; // rojo más oscuro (red-700)
+      transform: translateY(-2px);
+      filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.25));
+    }
+
+    &:active {
+      color: #991b1b; // aún más oscuro al click (red-800)
+      transform: scale(0.95);
+    }
+  }
 }
 
 .sidenav__handle {
+  margin-top: 5px;
+  text-align: center;
   font-size: 0.8rem;
-  color: $grisClaro;
+  color: $neutro;
 }

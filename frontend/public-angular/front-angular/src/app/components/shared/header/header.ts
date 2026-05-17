@@ -4,15 +4,18 @@ import { MenuService } from '../../../services/menu.service';
 import { Sidenavbar } from "./sidenavbar/sidenavbar";
 import { OrderService } from '../../../services/order.service';
 import { Router } from '@angular/router';
+import { ShoppingCart, LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-header',
-  imports: [Logo, Sidenavbar],
+  imports: [Logo, Sidenavbar, LucideAngularModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
+  readonly ShoppingCart = ShoppingCart;
+
   private router = inject(Router);
   goToOrder() {
     this.router.navigate(['/order']);

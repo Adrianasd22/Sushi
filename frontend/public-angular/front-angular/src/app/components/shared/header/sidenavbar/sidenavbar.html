@@ -1,12 +1,10 @@
-
 <!-- Hace que el fondo se ponga gris -->
 @if (menuService.isOpen()) {
-    <div class="overlay"
-        (click)="menuService.close()">
-    </div>
+<div class="overlay" (click)="menuService.close()">
+</div>
 }
 
-<nav class="sidenav" [class.open] = menuService.isOpen()>
+<nav class="sidenav" [class.open]=menuService.isOpen()>
 
   <!-- Botón cerrar -->
   <button (click)="menuService.close()" class="sidenav__close" aria-label="Cerrar menú">
@@ -17,13 +15,20 @@
   <div class="sidenav__content">
 
     <ul class="sidenav__nav">
-      <li><a routerLink="/">Inicio</a></li>
-      <li><a routerLink="/menu">Carta</a></li>
-      <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
-      <li><a routerLink="/sostenibilidad">Sostenibilidad</a></li>
-      <li><a routerLink="/resenas">Reseñas</a></li>
-      <li><a routerLink="/idioma">Idioma</a></li>
-      <li><a routerLink="/unete">Únete a nosotros</a></li>
+      <li><a routerLink="/" (click)="navigateAndClose()">Inicio</a></li>
+
+      <li><a routerLink="/menu" (click)="navigateAndClose()">
+          Carta </a></li>
+      <li><a routerLink="/sobre-nosotros" (click)="navigateAndClose()">
+          Sobre nosotros </a></li>
+      <li><a routerLink="/sostenibilidad" (click)="navigateAndClose()">
+          Sostenibilidad </a></li>
+      <li><a routerLink="/resenas" (click)="navigateAndClose()">
+          Reseñas </a></li>
+      <li><a routerLink="/idioma" (click)="navigateAndClose()">
+          Idioma </a></li>
+      <li><a routerLink="/unete" (click)="navigateAndClose()">
+          Únete a nosotros </a></li>
     </ul>
 
   </div>
@@ -35,14 +40,22 @@
 
     <div class="sidenav__promo">
       <p>Únete a Sushi Miyu para recibir descuentos en tu próxima visita</p>
-      <button class="btn-registrar" routerLink="/register">Registrarse</button>
+      <button class="btn-registrar" (click)="navigateAndClose()" routerLink="/register">Registrarse</button>
     </div>
 
     <div class="sidenav__social">
-      <span>Facebook</span>
-      <span>Instagram</span>
-      <span>WhatsApp</span>
-      <span>X</span>
+      <a href="#" aria-label="Facebook">
+        <lucide-icon [img]="Facebook" size="20"></lucide-icon>
+      </a>
+      <a href="#" aria-label="Instagram">
+        <lucide-icon [img]="Instagram" size="20"></lucide-icon>
+      </a>
+      <a href="#" aria-label="WhatsApp">
+        <lucide-icon [img]="MessageCircle" size="20"></lucide-icon>
+      </a>
+      <a href="#" aria-label="X">
+        <lucide-icon [img]="Twitter" size="20"></lucide-icon>
+      </a>
     </div>
 
     <p class="sidenav__handle">@SushiMiyu</p>
