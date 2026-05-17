@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Dependencias del sistema y extensiones PHP necesarias para Laravel
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -12,21 +12,21 @@ RUN apt-get update && apt-get install -y \
  && a2enmod rewrite \
  && rm -rf /var/lib/apt/lists/*
 
-# DocumentRoot en /var/www/html/public (Laravel)
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-# # Supuestamente para el error 403 al entrar al blade
-# RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf 
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copiar código
+COPY ./src /var/www/html
+
+# Permisos correctos
 RUN chown -R www-data:www-data /var/www/html
-USER www-data
 
-ENV COMPOSER_HOME=/tmp/composer
-ENV COMPOSER_CACHE_DIR=/tmp/composer/cache
+# Instalar dependencias Laravel
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader || true
 
-RUN mkdir -p /tmp/composer/cache \
-    && chown -R www-data:www-data /tmp/composer
+# Apache apunta a public
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Instalar Composer dentro del contenedor
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+EXPOSE 80
