@@ -107,14 +107,6 @@ export default function OrdersPage() {
             }
           </p>
         </div>
-
-        <button
-          onClick={() => navigate("/orders/new")}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors"
-        >
-          <Plus size={15} />
-          Nuevo pedido
-        </button>
       </div>
 
       {/* Tabs de filtrado */}

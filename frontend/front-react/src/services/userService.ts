@@ -8,10 +8,14 @@ type ApiResponse<T> = {
 
 
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("auth_token")
+
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    "Accept": "application/json",
+    ...(token
+      ? { Authorization: `Bearer ${token}` }
+      : {}),
   }
 }
 
