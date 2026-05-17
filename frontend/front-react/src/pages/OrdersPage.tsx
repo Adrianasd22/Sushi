@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom"
 
 import type { Order, OrderStatus } from "../types/order"
 import { getOrders, updateOrderStatus } from "../services/orderService"
-import { NEXT_STATUS, OrderCard } from "../components/orders/OrderCard"
-import { type FilterTab, OrderTabs } from "../components/orders/OrderTabs"
-
+import { OrderCard, NEXT_STATUS }       from "../components/orders/OrderCard"
+import { OrderTabs }                    from "../components/orders/OrderTabs"
+import type { FilterTab }               from "../components/orders/OrderTabs"
 
 export default function OrdersPage() {
   const navigate = useNavigate()
@@ -38,7 +38,15 @@ export default function OrdersPage() {
 
     try {
       const updated = await updateOrderStatus(id, next as OrderStatus)
-      setOrders(prev => prev.map(o => o.id === id ? updated : o))
+
+      setOrders(prev => prev.map(o => {
+        if (o.id !== id) return o
+
+        // Si el backend devuelve el objeto completo con user y products, lo usamos.
+        // Si no (le faltan relaciones), fusionamos solo el status para no romper nada.
+        const hasRelations = updated?.user && updated?.products
+        return hasRelations ? updated : { ...o, status: next as OrderStatus }
+      }))
     } catch (e) {
       console.error("No se pudo actualizar el pedido:", e)
     }
@@ -107,6 +115,14 @@ export default function OrdersPage() {
             }
           </p>
         </div>
+
+        <button
+          onClick={() => navigate("/orders/new")}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors"
+        >
+          <Plus size={15} />
+          Nuevo pedido
+        </button>
       </div>
 
       {/* Tabs de filtrado */}

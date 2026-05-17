@@ -1,4 +1,5 @@
 export const env = {
 //   apiUrl: import.meta.env.VITE_API_URL as string,
     API_URL: 'http://localhost:8080/api',
+    STORAGE_URL: 'http://localhost:8080/storage/',
 };
