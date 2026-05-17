@@ -1,30 +1,91 @@
-## Flujo de Despliegue de Infraestructura
-Deberás diseñar e implementar una solución completa que permita desplegar una aplicación PHP en AWS de forma automatizada.
+# Despliegue - AWS Deployment
+Este proyecto es una aplicación web completa con arquitectura distribuida desplegada en AWS usando Terraform, Docker y EC2.
 
-1. Infraestructura con Terraform
-Crea una plantilla de Terraform que defina la infraestructura necesaria en AWS para el despliegue de una aplicación PHP, cumpliendo los siguientes requisitos mínimos:
+# Arquitectura
+El sistema está dividido en dos servidores:
 
-- Una instancia EC2 con:
-    - Sistema operativo Ubuntu Server.
-    - Servidor web instalado y configurado (Apache).
+## Frontend EC2
+- Apache
+- Angular (cliente)
+- React (panel admin)
 
-- Los roles e IAM policies necesarios para permitir el uso de AWS CodeDeploy.
+Rutas:
+- `/` → Angular
+- `/admin` → React Admin
 
-- Configuración básica de red y seguridad:
-    - Security Group con los puertos necesarios (HTTP y SSH).
+## ⚙️ Backend EC2
+- Laravel API
+- MySQL (Docker)
+- phpMyAdmin
 
-- Configuración de AWS CodeDeploy:
-    - Aplicación de CodeDeploy.
-    - Deployment Group asociado a la instancia EC2.
+Rutas:
+- `/api` → Laravel
+- `:8081` → phpMyAdmin
 
-La plantilla debe permitir desplegar la infraestructura desde cero usando Terraform (init, plan, apply). `Asegurate que guardas el estado en un bucket de S3.`
 
-2. Automatización con GitHub Actions
-Implementa un workflow de GitHub Actions en el repositorio del proyecto que permita automatizar el despliegue de la infraestructura cumpliendo los siguientes requisitos:
-- El workflow debe poder ejecutarse:
-    - Automáticamente cuando se haga un push a la rama main.
-    - Manualmente, mediante workflow_dispatch.
+# Infraestructura (AWS + Terraform)
+Se crean automáticamente:
+- 1 EC2 frontend
+- 1 EC2 backend
+- Elastic IPs
+- Security Groups
+- Ubuntu 22.04 LTS (AMI automática)
 
-- El flujo debe:
-    - Conectarse a AWS utilizando credenciales almacenadas como GitHub Secrets.
-    - Haz que terraform aplique los cambios Terraform
+# Despliegue automático
+Cada servidor se configura automáticamente con scripts:
+
+## Frontend
+- Instala Apache
+- Copia Angular + React ya compilados
+- Sirve contenido estático
+
+## Backend
+- Instala Docker
+- Clona repositorio
+- Levanta Laravel + MySQL con Docker Compose
+
+# Requisitos
+- AWS Account
+- Terraform instalado
+- AWS CLI configurado
+- Key pair en AWS (vockey o similar)
+
+# Cómo desplegar
+
+## 1. Inicializar Terraform
+```bash
+cd despliegue
+terraform init
+```
+
+## 2. Planificar infraestructura
+```bash
+terraform plan
+```
+
+## 3. Crear infraestructura
+```bash
+terraform apply
+```
+
+## 4. Obtener IPs
+Terraform mostrará:
+- frontend_ip
+- backend_ip
+
+# Acceso
+
+## Frontend
+```
+http://FRONTEND_IP/
+```
+
+## Admin
+```
+http://FRONTEND_IP/admin
+```
+
+## Backend API
+```
+http://BACKEND_IP:8000/api
+```
