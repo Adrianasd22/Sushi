@@ -1,48 +1,54 @@
-import type { Order } from "../types/order"
+import { env } from "../config/env"
+import type { ApiResponse, Order, OrderStatus } from "../types/order"
 
-// Cambia esta URL base por la de tu entorno si es diferente
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8080/api"
-
-// Recupera el token de autenticación guardado en localStorage
-// (ajusta la clave si usas otro nombre)
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("auth_token")
+  const token = localStorage.getItem("token")
   return {
-    "Content-Type":  "application/json",
-    "Accept":        "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
   }
 }
 
-// ── GET /api/orders ───────────────────────────────────────────────────────────
-// Devuelve todos los pedidos con usuario y productos cargados.
-// En el controlador asegúrate de tener:
-//   Order::with('user', 'products')->get()
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const data = await res.json().catch(() => null)
+    throw new Error(data?.message ?? `Error ${res.status}`)
+  }
+  return res.json()
+}
+
+// ── GET /orders ───────────────────────────────────────────────────────────────
 export async function getOrders(): Promise<Order[]> {
-  const res = await fetch(`${API_BASE}/orders`, {
+  const res = await fetch(`${env.API_URL}/orders`, {
     headers: authHeaders(),
   })
 
-  if (!res.ok) {
-    throw new Error(`Error ${res.status} al cargar los pedidos`)
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const json = await handleResponse<any>(res)
 
-  const json = await res.json()
-
-  // Soporta tanto respuesta directa { data: [...] } como array plano [...]
-  return Array.isArray(json) ? json : json.data
+  // Igual que getProducts: soporta array plano o envuelto en data
+  return Array.isArray(json) ? json : (json.data ?? json.orders ?? [])
 }
 
-// ── GET /api/orders/:id ───────────────────────────────────────────────────────
-export async function getOrder(id: number): Promise<Order> {
-  const res = await fetch(`${API_BASE}/orders/${id}`, {
+// ── GET /orders/:id ───────────────────────────────────────────────────────────
+export async function getOrderById(id: number): Promise<Order> {
+  const res = await fetch(`${env.API_URL}/orders/${id}`, {
     headers: authHeaders(),
   })
+  const json = await handleResponse<ApiResponse<Order>>(res)
+  return json.data
+}
 
-  if (!res.ok) {
-    throw new Error(`Error ${res.status} al cargar el pedido #${id}`)
-  }
-
-  const json = await res.json()
-  return json.data ?? json
+// ── PATCH /orders/:id/status ──────────────────────────────────────────────────
+export async function updateOrderStatus(
+  id: number,
+  status: OrderStatus,
+): Promise<Order> {
+  const res = await fetch(`${env.API_URL}/orders/${id}/status`, {
+    method:  "PATCH",
+    headers: authHeaders(),
+    body:    JSON.stringify({ status }),
+  })
+  const json = await handleResponse<ApiResponse<Order>>(res)
+  return json.data
 }

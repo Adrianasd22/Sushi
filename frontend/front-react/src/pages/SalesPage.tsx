@@ -2,18 +2,14 @@ import { useState, useEffect, useMemo } from "react"
 import { TrendingUp, ShoppingBag, Receipt, Ban } from "lucide-react"
 
 import type { Order } from "../types/order"
-import { RevenueChart, OrdersPerDayChart } from "../components/orders/BarChart"
-import { KpiCard } from "../components/orders/KpiCard"
-import { OrdersTable } from "../components/orders/OrdersTable"
-import { ProductsChart } from "../components/orders/ProductsChart"
-import { getOrders } from "../services/orderService"
+import { getOrders }           from "../services/orderService"
+import { KpiCard }             from "../components/sales/KpiCard"
+import { RevenueChart, OrdersPerDayChart } from "../components/sales/BarChart"
+import { ProductsChart }       from "../components/sales/ProductsChart"
+import { OrdersTable }         from "../components/sales/OrdersTable"
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const orderTotal = (o: Order) =>
-  o.products.reduce((sum, p) => sum + p.quantity * p.unit_price, 0)
-
-//Antes se exportaba
 const fmt = (n: number) =>
   n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"
 
@@ -26,34 +22,38 @@ export default function SalesPage() {
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState<string | null>(null)
 
-  // ── Carga de datos reales ──────────────────────────────────────────────────
-  useEffect(() => {
+  // ── Fetch ─────────────────────────────────────────────────────────────────
+  const fetchOrders = () => {
+    setLoading(true)
+    setError(null)
     getOrders()
       .then(setOrders)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
-  }, [])
+  }
 
-  // ── Estadísticas calculadas ───────────────────────────────────────────────
+  useEffect(() => { fetchOrders() }, [])
+
+  // ── Estadísticas ──────────────────────────────────────────────────────────
   const stats = useMemo(() => {
-    // Separar por estado (tu API aún no devuelve status, así que todos entran
-    // como completados por ahora; cuando añadas el campo status al resource
-    // simplemente cambia el filtro)
-    const completed = orders   // ajusta a: orders.filter(o => o.status === "completado")
-    const cancelled: Order[] = [] // ajusta a: orders.filter(o => o.status === "cancelado")
+    // Ahora que status existe en la BD, filtramos correctamente.
+    // Si un pedido no tiene status todavía (null/undefined), se trata como pendiente.
+    const completed = orders.filter(o => o.status === "completado")
+    const cancelled = orders.filter(o => o.status === "cancelado")
 
-    const totalRevenue   = completed.reduce((s, o) => s + o.total, 0)
+    // Usamos o.total directamente — ya viene calculado del backend
+    const totalRevenue   = completed.reduce((s, o) => s + Number(o.total), 0)
     const avgTicket      = completed.length ? totalRevenue / completed.length : 0
     const totalCompleted = completed.length
     const totalCancelled = cancelled.length
 
-    // Ingresos y pedidos por día (últimos 7 días)
-    const revenueByDay:  Record<string, number> = {}
-    const ordersPerDay:  Record<string, number> = {}
+    // Ingresos y pedidos agrupados por día
+    const revenueByDay: Record<string, number> = {}
+    const ordersPerDay: Record<string, number> = {}
 
     completed.forEach(o => {
       const d = o.created_at.slice(0, 10)
-      revenueByDay[d] = (revenueByDay[d] ?? 0) + o.total
+      revenueByDay[d] = (revenueByDay[d] ?? 0) + Number(o.total)
       ordersPerDay[d] = (ordersPerDay[d] ?? 0) + 1
     })
 
@@ -68,7 +68,7 @@ export default function SalesPage() {
       }
     })
 
-    // Productos más vendidos
+    // Productos más vendidos (de pedidos completados)
     const productCount:   Record<string, number> = {}
     const productRevenue: Record<string, number> = {}
 
@@ -90,13 +90,22 @@ export default function SalesPage() {
       const h = new Date(o.created_at).getHours()
       byHour[h] = (byHour[h] ?? 0) + 1
     })
-    const peakHour = Object.entries(byHour).sort((a, b) => b[1] - a[1])[0] as
-      [string, number] | undefined
+    const peakHour = (
+      Object.entries(byHour).sort((a, b) => b[1] - a[1])[0] ?? null
+    ) as [string, number] | null
 
-    return { totalRevenue, avgTicket, totalCompleted, totalCancelled, last7, topProducts, peakHour }
+    return {
+      totalRevenue,
+      avgTicket,
+      totalCompleted,
+      totalCancelled,
+      last7,
+      topProducts,
+      peakHour,
+    }
   }, [orders])
 
-  // ── Estados de carga / error ──────────────────────────────────────────────
+  // ── Estados UI ────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -115,7 +124,7 @@ export default function SalesPage() {
           <p className="text-sm text-red-400">Error al cargar los datos</p>
           <p className="text-xs text-zinc-600">{error}</p>
           <button
-            onClick={() => { setError(null); setLoading(true); getOrders().then(setOrders).catch(e => setError(e.message)).finally(() => setLoading(false)) }}
+            onClick={fetchOrders}
             className="mt-2 text-xs text-red-400 underline hover:text-red-300"
           >
             Reintentar
@@ -166,18 +175,18 @@ export default function SalesPage() {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueChart   days={stats.last7} />
+        <RevenueChart      days={stats.last7} />
         <OrdersPerDayChart days={stats.last7} />
       </div>
 
       {/* Productos más vendidos */}
       <ProductsChart
         products={stats.topProducts}
-        peakHour={stats.peakHour ?? null}
+        peakHour={stats.peakHour}
         fmt={fmt}
       />
 
-      {/* Tabla de pedidos — los más recientes primero */}
+      {/* Últimos pedidos — más recientes primero, máx 10 */}
       <OrdersTable
         orders={[...orders].reverse().slice(0, 10)}
         fmt={fmt}
