@@ -32,7 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ademas de crear reservar y ver sus reservas
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('orders', [OrderController::class, 'store']);
-    Route::get('orders/{id}', [OrderController::class, 'show']);
+    Route::get('/my-orders', [OrderController::class, 'myOrders']);  // Obtener los pedidos del usuario autenticado
+    Route::get('/my-orders/{id}', [OrderController::class, 'myOrder']);
 });
 
 
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
     //Aqui van las rutas de poder ver las reservas y los pedidos
     Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
 });
 

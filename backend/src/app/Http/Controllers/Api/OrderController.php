@@ -20,13 +20,47 @@ class OrderController extends Controller
         return OrderResource::collection($orders);
     }
 
-    //GET pero por id del pedido
-    public function show(Request $request, string $id)
+    // GET /api/orders/{id}
+    public function show(string $id)
     {
-        $order = $request->user()->orders()->with('products')->find($id);
+        $order = Order::with('user', 'products')->find($id);
 
         if (!$order) {
-            return response()->json(['error' => 'Orden no encontrada'], 404);
+            return response()->json([
+                'error' => 'Pedido no encontrado'
+            ], 404);
+        }
+
+        return new OrderResource($order);
+    }
+
+    /** ==========================
+     * USUARIO AUTENTICADO
+     * ========================== */
+
+    // GET /api/my-orders
+    public function myOrders(Request $request)
+    {
+        $orders = $request->user()
+            ->orders()
+            ->with('products')
+            ->get();
+
+        return OrderResource::collection($orders);
+    }
+
+    // GET /api/my-orders/{id}
+    public function myOrder(Request $request, string $id)
+    {
+        $order = $request->user()
+            ->orders()
+            ->with('products')
+            ->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'error' => 'Pedido no encontrado'
+            ], 404);
         }
 
         return new OrderResource($order);
