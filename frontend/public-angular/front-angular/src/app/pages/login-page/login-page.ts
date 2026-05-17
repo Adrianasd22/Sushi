@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LoginService } from '../../services/login.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -11,11 +12,13 @@ import { LoginService } from '../../services/login.service';
 })
 export class LoginPage {
 
-  apiUrl = 'http://localhost:8080/api/login';
+  apiUrl = environment.loginUrl;
   email = signal('');
   password = signal('');
 
   constructor(private loginService: LoginService) { }
+  
+  redirect: (url: string) => void = (url: string) => { window.location.href = url; };
 
   onLogin() {
 
@@ -33,11 +36,11 @@ export class LoginPage {
         alert('Bienvenido administrador ' + response.user.name + '. Redirigiendo al dashboard...');
         const token = response.access_token;
         const role = response.user.role;
-        window.location.href = `http://localhost:5173?token=${token}&role=${role}`;
+        this.redirect(environment.dashboardUrl + `?token=${token}&role=${role}`);
       } else
       {
         alert('Bienvenido de vuelta, ' + response.user.name);
-        window.location.href = "http://localhost:4200/menu";
+        this.redirect(environment.menuUrl);
       }
       
       },
