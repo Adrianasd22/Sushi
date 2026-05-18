@@ -5,22 +5,26 @@ info:
   version: "1.0.0"
   description: |
     API REST del restaurante Sushi Miyu.
-    Permite la gestión de usuarios, autenticación, platos y categorías.
-    Incluye mejoras como paginación, búsqueda, ordenación, conteo y endpoints anidados.
-    Autenticación mediante JWT (Bearer Token).
+    Permite la gestión de usuarios, autenticación, productos, categorías y pedidos.
+    Incluye autenticación con Sanctum y roles de usuario.
 
 servers:
   - url: http://localhost:8080/api
+    description: API en Docker local
 
 tags:
-  - name: Login
-    description: Autenticación de usuarios
-  - name: Usuarios
-    description: Gestión de usuarios
-  - name: Platos
-    description: Gestión de platos y mejoras
-  - name: Categorías
-    description: Gestión de categorías y endpoints anidados
+  - name: Auth
+    description: Registro, login y logout
+  - name: Users
+    description: Gestión de usuarios (admin)
+  - name: Products
+    description: Gestión de productos
+  - name: Categories
+    description: Gestión de categorías
+  - name: Orders
+    description: Gestión de pedidos
+  - name: Misc
+    description: Endpoints de prueba y utilidades
 
 components:
   securitySchemes:
@@ -30,313 +34,356 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        mensaje:
+          type: string
 
-    Usuario:
+    User:
       type: object
       properties:
         id:
           type: integer
-        nombre:
+        name:
           type: string
-        correo:
+        email:
           type: string
-        rol:
+        role:
           type: string
-          
-    UsuarioMod:
-      type: object
-      properties:
-        nombre:
+        created_at:
           type: string
-        correo:
-          type: string
-        contrasenia:
-          type: string
-        rol:
-          type: string
+          format: date-time
 
-    UsuarioCreate:
+    UserCreate:
       type: object
-      required: [nombre, correo, contrasenia, rol]
+      required: [name, email, password, role]
       properties:
-        nombre:
+        name:
           type: string
-        correo:
+        email:
           type: string
           format: email
-        contrasenia:
+        password:
           type: string
-        rol:
+          minLength: 8
+        role:
           type: string
-          example: user
+          enum: [admin, worker, user]
 
+    UserRoleUpdate:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [admin, worker, user]
 
-    UsuarioLogin:
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    LoginRequest:
       type: object
       required: [email, password]
       properties:
         email:
           type: string
-          example: admin@sushimiyu.com
+          format: email
         password:
           type: string
-          example: "1234"
 
     LoginResponse:
       type: object
       properties:
-        token:
+        mensaje:
           type: string
+        access_token:
+          type: string
+        token_type:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
 
-    Plato:
+    Product:
       type: object
       properties:
         id:
           type: integer
-        nombre:
+        name:
           type: string
-        descripcion:
+        description:
           type: string
-        precio:
+        price:
           type: number
-        id_categoria:
-          type: integer
+        category:
+          type: string
+          nullable: true
+        image:
+          type: string
+          nullable: true
 
-    PlatoCreate:
+    ProductCreate:
       type: object
-      required: [nombre, precio, descripcion, categoria]
+      required: [name, description, price, category_id]
       properties:
-        nombre:
+        name:
           type: string
-        precio:
+        description:
+          type: string
+        price:
           type: number
-        descripcion:
+        category_id:
+          type: integer
+        image:
           type: string
-        categoria:
-          type: string
+          nullable: true
 
-    Categoria:
+    Category:
       type: object
       properties:
         id:
           type: integer
-        nombre:
+        name:
           type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
 
-    CategoriaCreate:
+    CategoryCreate:
       type: object
-      required: [nombre]
+      required: [name]
       properties:
-        nombre:
+        name:
           type: string
 
+    OrderProductItem:
+      type: object
+      required: [id, quantity]
+      properties:
+        id:
+          type: integer
+        quantity:
+          type: integer
+          minimum: 1
+
+    OrderCreate:
+      type: object
+      required: [products, phone, mode]
+      properties:
+        products:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderProductItem'
+        phone:
+          type: string
+        mode:
+          type: string
+          enum: [pickup, delivery]
+        address:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    OrderUpdate:
+      type: object
+      required: [products]
+      properties:
+        products:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderProductItem'
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        mode:
+          type: string
+        address:
+          type: string
+          nullable: true
+        phone:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        total:
+          type: number
+        status:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              quantity:
+                type: integer
+              unit_price:
+                type: number
+        created_at:
+          type: string
+          format: date-time
 
 paths:
+  /prueba:
+    get:
+      tags: [Misc]
+      summary: Comprobar que la API está funcionando
+      responses:
+        '200':
+          description: Mensaje de prueba
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
 
-  ############################
-  #          LOGIN
-  ############################
-
-  /login:
+  /register:
     post:
-      tags: [Login]
-      summary: Login y obtención de token JWT
+      tags: [Auth]
+      summary: Registrar un nuevo usuario
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UsuarioLogin"
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
-        "200":
+        '201':
+          description: Usuario registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  role:
+                    type: string
+        '400':
+          description: Validación incorrecta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión y obtener token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
           description: Login correcto
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponse"
-        "401":
-          description: Credenciales incorrectas
-
-  ############################
-  #          ME
-  ############################
-
-  /me:
-    get:
-      tags: [Usuarios]
-      summary: Obtener datos del usuario autenticado
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Usuario autenticado
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Usuario"
-        "401":
-          description: Token inválido o caducado
+                $ref: '#/components/schemas/ErrorResponse'
 
-  ############################
-  #         USUARIOS
-  ############################
-
-  /usuario:
-    get:
-      tags: [Usuarios]
-      summary: Listar usuarios (ADMIN)
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Lista de usuarios
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Usuario"
-        "403":
-          description: No autorizado
+  /logout:
     post:
-      tags: [Usuarios]
-      summary: Crear un nuevo usuario
-      security:
-          - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UsuarioCreate"
-      responses:
-        "201":
-          description: Usuario creado
-        "400":
-          description: Datos incorrectos
-
-  /usuario/{id}:
-    get:
-      tags: [Usuarios]
-      summary: Obtener usuario por ID
+      tags: [Auth]
+      summary: Cerrar sesión y revocar token
       security:
         - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
       responses:
-        "200":
-          description: Usuario encontrado
+        '200':
+          description: Logout exitoso
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Usuario"
-        "404":
-          description: Usuario no encontrado
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '401':
+          description: No autorizado
 
-    put:
-      tags: [Usuarios]
-      summary: Actualizar usuario
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UsuarioMod"
-      responses:
-        "200":
-          description: Usuario actualizado
-        "404":
-          description: Usuario no encontrado
-
-    delete:
-      tags: [Usuarios]
-      summary: Eliminar usuario (ADMIN)
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Usuario eliminado
-        "404":
-          description: Usuario no encontrado
-
-
-  ############################
-  #          PLATOS
-  ############################
-
-  /plato:
+  /products:
     get:
-      tags: [Platos]
-      summary: Listado de platos (con mejoras)
-      description: |
-        Endpoint principal de platos que incluye:
-        - Paginación (page, limit)
-        - Ordenación (order)
-        - Búsqueda (search)
-        - Conteo total (count)
+      tags: [Products]
+      summary: Listar productos
       parameters:
-        - name: page
-          in: query
-          description: Página (empieza en 0)
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          description: Número de elementos por página
-          schema:
-            type: integer
-        - name: order
-          in: query
-          description: Ordenación de resultados
-          schema:
-            type: string
-            enum: [precio_asc, precio_desc, nombre_asc, nombre_desc, id_asc, id_desc]
         - name: search
           in: query
-          description: Búsqueda por nombre o descripción
           schema:
             type: string
-        - name: count
+          description: Buscar por nombre
+        - name: category_id
           in: query
-          description: Devuelve el número total de platos
           schema:
-            type: boolean
+            type: integer
+          description: Filtrar por categoría
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Ordenar por campo
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Orden ascendente o descendente
       responses:
-        "200":
-          description: Lista de platos o total
+        '200':
+          description: Lista de productos
           content:
             application/json:
               schema:
-                oneOf:
-                  - type: array
-                    items:
-                      $ref: "#/components/schemas/Plato"
-                  - type: object
-                    properties:
-                      total:
-                        type: integer
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
 
     post:
-      tags: [Platos]
-      summary: Crear un plato (ADMIN)
+      tags: [Products]
+      summary: Crear producto (admin)
       security:
         - bearerAuth: []
       requestBody:
@@ -344,17 +391,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlatoCreate"
+              $ref: '#/components/schemas/ProductCreate'
       responses:
-        "201":
-          description: Plato creado
-        "403":
+        '201':
+          description: Producto creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '403':
           description: No autorizado
 
-  /plato/{id}:
+  /products/{id}:
     get:
-      tags: [Platos]
-      summary: Obtener un plato por ID
+      tags: [Products]
+      summary: Obtener producto por ID
       parameters:
         - name: id
           in: path
@@ -362,18 +418,18 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Plato encontrado
+        '200':
+          description: Producto encontrado
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Plato"
-        "404":
-          description: Plato no encontrado
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
 
     put:
-      tags: [Platos]
-      summary: Actualizar un plato (ADMIN)
+      tags: [Products]
+      summary: Actualizar producto (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -387,16 +443,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlatoCreate"
+              $ref: '#/components/schemas/ProductCreate'
       responses:
-        "200":
-          description: Plato actualizado
-        "404":
-          description: Plato no encontrado
+        '200':
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
 
     delete:
-      tags: [Platos]
-      summary: Eliminar un plato (ADMIN)
+      tags: [Products]
+      summary: Eliminar producto (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -406,213 +471,49 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Plato eliminado
-        "404":
-          description: Plato no encontrado
+        '200':
+          description: Producto eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '404':
+          description: Producto no encontrado
 
-  /categoria/{id}/platos:
+  /categories:
     get:
-      tags: [Platos]
-      summary: Obtener platos de una categoría concreta
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Lista de platos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Plato"
-        "404":
-          description: Categoría no encontrada
-
-
-
-  ############################
-  #          PEDIDOS
-  ############################
-  /pedidos:
-    get:
-      tags: [Pedidos]
-      summary: Listar pedidos
-      responses:
-        "200":
-          description: Lista de pedidos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Pedido"
-              example:
-                - id: 1
-                  total: 19.99
-                  user_id: 2
-                  products: [
-                    {
-                      id: 1,
-                      name: "Takoyakis",
-                      quantity: 2,
-                      unit_price: 5.50
-                    },
-                    {
-                      id: 3,
-                      name: "Edamame con Sal Marina",
-                      quantity: 1,
-                      unit_price: 2.30
-                    }
-                  ]
-
-
-    post:
-      tags: [Pedidos]
-      summary: Crear un nuevo pedido
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PedidoCreate"
-      responses:
-        "201":
-          description: Pedido creado correctamente
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pedido"
-      
-    put:
-      tags: [Pedidos]
-      summary: Actualizar un pedido
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PedidoUpdate"
-      responses:
-        "200":
-          description: Pedido actualizado correctamente
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pedido"
-        "404":
-          description: Pedido no encontrado
-
-    delete:
-      tags: [Pedidos]
-      summary: Eliminar un pedido
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Pedido eliminado correctamente
-        "404":
-          description: Pedido no encontrado
-  /pedido/{id}:
-    get:
-      tags: [Pedidos]
-      summary: Obtener un pedido por ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Pedido encontrado
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pedido"
-        "404":
-          description: Pedido no encontrado
-    put:
-      tags: [Pedidos]
-      summary: Actualizar un pedido por ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PedidoUpdate"
-      responses:
-        "200":
-          description: Pedido actualizado correctamente
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pedido"
-        "404":
-          description: Pedido no encontrado
-    delete:
-      tags: [Pedidos]
-      summary: Eliminar un pedido por ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Pedido eliminado correctamente
-        "404":
-          description: Pedido no encontrado
-
-
-  ############################
-  #       CATEGORÍAS
-  ############################
-
-  /categoria:
-    get:
-      tags: [Categorías]
+      tags: [Categories]
       summary: Listar categorías
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
-        "200":
+        '200':
           description: Lista de categorías
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Categoria"
+                  $ref: '#/components/schemas/Category'
 
     post:
-      tags: [Categorías]
-      summary: Crear una nueva categoría
+      tags: [Categories]
+      summary: Crear categoría (admin)
       security:
         - bearerAuth: []
       requestBody:
@@ -620,14 +521,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CategoriaCreate"
+              $ref: '#/components/schemas/CategoryCreate'
       responses:
-        "201":
+        '201':
           description: Categoría creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Category'
 
-  /categoria/{id}:
+  /categories/{id}:
     get:
-      tags: [Categorías]
+      tags: [Categories]
       summary: Obtener categoría por ID
       parameters:
         - name: id
@@ -636,18 +546,18 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
+        '200':
           description: Categoría encontrada
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Categoria"
-        "404":
+                $ref: '#/components/schemas/Category'
+        '404':
           description: Categoría no encontrada
 
     put:
-      tags: [Categorías]
-      summary: Modificar una categoría
+      tags: [Categories]
+      summary: Actualizar categoría (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -661,14 +571,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CategoriaCreate"
+              $ref: '#/components/schemas/CategoryCreate'
       responses:
-        "200":
-          description: Categoría modificada
+        '200':
+          description: Categoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Categoría no encontrada
 
     delete:
-      tags: [Categorías]
-      summary: Eliminar categoría (ADMIN)
+      tags: [Categories]
+      summary: Eliminar categoría (admin)
       security:
         - bearerAuth: []
       parameters:
@@ -678,7 +594,314 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Categoría eliminada
-        "404":
-          description: Categoría no encontrada
+        '204':
+          description: Categoría eliminada correctamente
+
+  /categories-with-products:
+    get:
+      tags: [Categories]
+      summary: Obtener categorías con productos
+      responses:
+        '200':
+          description: Lista de categorías con productos incluidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Listar todos los pedidos (admin/worker)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+    post:
+      tags: [Orders]
+      summary: Crear pedido (autenticado)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Pedido creado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Obtener pedido por ID (admin/worker)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Pedido no encontrado
+
+    put:
+      tags: [Orders]
+      summary: Actualizar pedido (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate'
+      responses:
+        '200':
+          description: Pedido actualizado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '404':
+          description: Pedido no encontrado
+
+    delete:
+      tags: [Orders]
+      summary: Eliminar pedido (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pedido eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+        '404':
+          description: Pedido no encontrado
+
+  /orders/{order}/status:
+    patch:
+      tags: [Orders]
+      summary: Actualizar estado de pedido (admin/worker)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pendiente, en_curso, completado, cancelado]
+      responses:
+        '200':
+          description: Estado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /my-orders:
+    get:
+      tags: [Orders]
+      summary: Listar pedidos del usuario autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Pedidos del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /my-orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Obtener pedido propio por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Pedido no encontrado
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Listar usuarios (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags: [Users]
+      summary: Crear usuario (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Obtener usuario por ID (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Usuario no encontrado
+
+    delete:
+      tags: [Users]
+      summary: Eliminar usuario (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario eliminado
+
+  /users/{id}/role:
+    put:
+      tags: [Users]
+      summary: Cambiar rol de usuario (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleUpdate'
+      responses:
+        '200':
+          description: Rol actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
