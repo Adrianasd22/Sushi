@@ -33,7 +33,7 @@ jobs:
 
             # Copiar a Apache
             sudo rm -rf /var/www/html/*
-            sudo cp -r /home/ubuntu/sushi/frontend/public-angular/dist/*/browser/* /var/www/html/
+            sudo cp -r /home/ubuntu/sushi/frontend/public-angular/front-angular/dist/*/browser/* /var/www/html/
             sudo mkdir -p /var/www/html/admin
             sudo cp -r /home/ubuntu/sushi/frontend/front-react/dist/* /var/www/html/admin/
 
