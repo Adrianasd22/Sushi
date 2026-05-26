@@ -22,7 +22,7 @@ jobs:
             git pull origin main
 
             # Build Angular
-            cd /home/ubuntu/sushi/frontend/public-angular
+            cd /home/ubuntu/sushi/frontend/public-angular/front-angular
             npm install
             npx ng build --configuration production
 
