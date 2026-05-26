@@ -17,11 +17,12 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/sushi
             cd /home/ubuntu/sushi
             git pull origin main
 
             # Build Angular
-            cd /home/ubuntu/sushi/frontend/public-angular/front-angular
+            cd /home/ubuntu/sushi/frontend/public-angular
             npm install
             npx ng build --configuration production
 
