@@ -28,6 +28,10 @@ export const routes: Routes = [
      component: RegisterPage,
   },
   {
+    path: 'order',
+    loadComponent: () => import('./pages/order-page/order-page').then((m) => m.OrderPage),
+  },
+  {
     path: '**', //Cualquier ruta que no sea las anteriores
     loadComponent: () => import('./pages/error404-page/error404-page').then((m) => m.Error404Page),
   }

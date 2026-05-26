@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 interface RowActionsProps {
   onView?: () => void
@@ -6,15 +6,9 @@ interface RowActionsProps {
   onDelete?: () => void
 }
 
-function RowActions({ onView, onEdit, onDelete }: RowActionsProps) {
+function RowActions({ onEdit, onDelete }: RowActionsProps) {
   return (
     <div className="flex gap-2">
-      <button
-        onClick={onView}
-        className="p-2 rounded-md hover:bg-zinc-800"
-      >
-        <Eye size={16} />
-      </button>
 
       <button
         onClick={onEdit}

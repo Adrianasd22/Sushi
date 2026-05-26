@@ -5,9 +5,7 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    category : Category;
+    category_id : number;
     image : string;
-    // allergens: string[];
-    // allergens: Allergen[];
 }
 

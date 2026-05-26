@@ -18,6 +18,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+#Lo pongo para no subir las 70 imagenes al repo pero si quereis lo cambio
+/storage/app/public/products/*.png
 /vendor
 Homestead.json
 Homestead.yaml

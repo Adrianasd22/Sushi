@@ -81,31 +81,47 @@
 
     <!-- Cards de iconos -->
     <div class="login__features">
-      <div class="login__feature-card">
-        <span class="login__feature-label">Ven a nuestro local</span>
-        <span class="login__feature-icon">
-            <img src="./images/compra-local.png" alt="iconoLocal" >
-        </span>
-        <!-- 
-            Se supone que los iconos deberian de funcionar bien,
-            pero no carga la imagen, aunque el path es correcto.  
-        -->
-      </div>
-      <div class="login__feature-card">
-        <span class="login__feature-label">Pide a domicilio</span>
-        <img src="./images/auto.png" alt="iconoDomicilio" class="login__feature-icon">
-      <!-- 
-        Se supone que los iconos deberian de funcionar bien,
-        pero no carga la imagen, aunque el path es correcto.
-        La estructura es distinta al de arriba pero ambos src son correctos
-        No se si es un problema de angular o del css, pero no carga ninguna imagen.
-      -->
-      </div>
-      <div class="login__feature-card">
-        <span class="login__feature-label">Precios asequibles</span>
-        <span class="login__feature-icon">$</span>
-      </div>
-    </div>
+
+  <div class="login__feature-card">
+    <span class="login__feature-label">
+      Ven a nuestro local
+    </span>
+
+    <span class="login__feature-icon">
+      <lucide-icon
+        [img]="Store"
+        size="28">
+      </lucide-icon>
+    </span>
+  </div>
+
+  <div class="login__feature-card">
+    <span class="login__feature-label">
+      Pide a domicilio
+    </span>
+
+    <span class="login__feature-icon">
+      <lucide-icon
+        [img]="Bike"
+        size="28">
+      </lucide-icon>
+    </span>
+  </div>
+
+  <div class="login__feature-card">
+    <span class="login__feature-label">
+      Precios asequibles
+    </span>
+
+    <span class="login__feature-icon">
+      <lucide-icon
+        [img]="BadgeEuro"
+        size="28">
+      </lucide-icon>
+    </span>
+  </div>
+
+</div>
 
   </div>
 </div>

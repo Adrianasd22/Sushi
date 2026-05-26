@@ -15,17 +15,52 @@ class OrderController extends Controller
     //GET /api/orders
     public function index(Request $request)
     {
-        $orders = $request->user()->orders()->with('products')->get();
+        // $orders = $request->user()->orders()->with('products')->get();
+        $orders = Order::with('user', 'products')->get();
         return OrderResource::collection($orders);
     }
 
-    //GET pero por id del pedido
-    public function show(Request $request, string $id)
+    // GET /api/orders/{id}
+    public function show(string $id)
     {
-        $order = $request->user()->orders()->with('products')->find($id);
+        $order = Order::with('user', 'products')->find($id);
 
         if (!$order) {
-            return response()->json(['error' => 'Orden no encontrada'], 404);
+            return response()->json([
+                'error' => 'Pedido no encontrado'
+            ], 404);
+        }
+
+        return new OrderResource($order);
+    }
+
+    /** ==========================
+     * USUARIO AUTENTICADO
+     * ========================== */
+
+    // GET /api/my-orders
+    public function myOrders(Request $request)
+    {
+        $orders = $request->user()
+            ->orders()
+            ->with('products')
+            ->get();
+
+        return OrderResource::collection($orders);
+    }
+
+    // GET /api/my-orders/{id}
+    public function myOrder(Request $request, string $id)
+    {
+        $order = $request->user()
+            ->orders()
+            ->with('products')
+            ->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'error' => 'Pedido no encontrado'
+            ], 404);
         }
 
         return new OrderResource($order);
@@ -39,10 +74,18 @@ class OrderController extends Controller
             'products'           => 'required|array|min:1',
             'products.*.id'      => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+            'phone'              => 'required|string',
+            'mode'              => 'required|in:pickup,delivery',
+            'notes'              =>  'nullable|string',
+            'address'           => 'nullable|string'
         ]);
 
         $order = Order::create([
             'user_id' => $request->user()->id,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'notes' => $validated['notes'] ?? null,
+            'mode' => $validated['mode'],
         ]);
 
         $total = 0;
@@ -99,6 +142,18 @@ class OrderController extends Controller
             'mensaje' => 'Pedido actualizado con éxito',
             'data'    => new OrderResource($order->load('products'))
         ], 201);
+    }
+
+    // PATCH /api/orders/{order}/status
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pendiente,en_curso,completado,cancelado',
+        ]);
+
+        $order->update($validated);
+
+        return response()->json(new OrderResource($order->load('user', 'products')));
     }
 
 

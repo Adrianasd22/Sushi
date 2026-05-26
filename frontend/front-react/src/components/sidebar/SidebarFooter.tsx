@@ -1,4 +1,5 @@
 import { Settings, ChevronsLeft } from "lucide-react"
+import SidebarNavItem from "./SidebarNavItem"
 
 interface SidebarFooterProps {
   collapsed: boolean
@@ -8,18 +9,8 @@ interface SidebarFooterProps {
 function SidebarFooter({collapsed, onToggle}: SidebarFooterProps) {
   return (
     <div className="p-2 border-t border-zinc-800">
-      <button
-        
-        className="
-          flex items-center gap-3 w-full
-          px-3 py-2 rounded-md text-sm
-          text-zinc-400 hover:text-zinc-100
-          hover:bg-zinc-800 transition-colors
-        "
-      >
-        <Settings size={18} />
-        {!collapsed && <span>Configuración</span>}
-      </button>
+      
+      <SidebarNavItem icon={Settings} label="Cambiar usuario" to="/login" collapsed={collapsed}/>
 
       <button
         onClick={onToggle}

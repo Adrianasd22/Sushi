@@ -1,164 +1,137 @@
-# 🍣 Sushi Miyu — Frontend Angular
+﻿# 🍣 Sushi Miyu — Frontend Angular
 
-Parte del frontend hecha con angular. Contiene multiples paginas webs html, hojas de estilos scss y codigo para angular en ts
+Este proyecto es el frontend Angular del restaurante Sushi. Es la parte pública y de cliente que consume la API del backend y ofrece login, registro, menú, pedido y estado del carrito.
 
----
+## Índice
 
-## 🗂️ Estructura del proyecto
+- [Descripción](#descripción)
+- [Tecnologías utilizadas](#tecnologías-utilizadas)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Rutas de la aplicación](#rutas-de-la-aplicación)
+- [Funcionalidades principales](#funcionalidades-principales)
+- [Servicios y componentes](#servicios-y-componentes)
+- [Estado actual](#estado-actual)
+- [Tests y GitHub Actions](#tests-y-github-actions)
 
-La estructura es la siguiente:
+## Descripción
+
+Este frontend Angular es el cliente web del restaurante Sushi Miyu. Permite iniciar sesión, registrarse, ver el menú, crear pedidos y acceder a la experiencia pública.
+
+## Tecnologías utilizadas
+
+- **Angular 20+**
+- **TypeScript**
+- **Angular Router**
+- **RxJS**
+- **SCSS**
+- **Lucide Angular** para iconos
+- **Karma / Jasmine** para tests
+
+## Estructura del proyecto
 
 ```
 src/app/
-│
-├── app.ts                  # Componente raíz
-├── app.html                # Template raíz
-├── app.routes.ts           # Definición de rutas
-├── app.config.ts           # Configuración global (HttpClient, Router, etc.)
-│
-├── pages/                  # Páginas completas (una por ruta)
-│   ├── home-page/          # Página de inicio 
-│   ├── menu-page/          # Página del menú
-│   ├── login-page/         # Formulario de inicio de sesión
-│   ├── register-page/      # Formulario de registro
-│   └── error404-page/      # Página de error para rutas no encontradas
-│
-├── components/             # Componentes reutilizables
+├── app.ts
+├── app.html
+├── app.routes.ts
+├── app.config.ts
+├── components/
 │   ├── shared/
-│   │   ├── header/         # Barra de navegación superior (logo, idioma)
-│   │   │   └── sidenavbar/ # Menú lateral deslizable (abierto desde el header)
-│   │   └── logo/           # Componente del logotipo SVG de Miyu
-│   ├── product-card/       # Tarjeta visual de un producto (nombre, precio, imagen)
-│   └── category-section/   # Sección agrupadora: título de categoría + lista de product-cards
-│
+│   │   ├── header/
+│   │   └── sidenavbar/
+│   ├── product-card/
+│   └── category-section/
+├── pages/
+│   ├── home-page/
+│   ├── menu-page/
+│   ├── login-page/
+│   ├── register-page/
+│   ├── order-page/
+│   └── error404-page/
 ├── services/
-│   ├── product.service.ts  # Llama a la API REST y almacena los productos en una Signal
-│   └── menu.service.ts     # Controla si el menú lateral (sidenavbar) está abierto o cerrado
-│
+│   ├── index-db.service.ts
+│   ├── login.service.ts
+│   ├── menu.service.ts
+│   ├── order.service.ts
+│   └── product.service.ts
 ├── interfaces/
-│   ├── product.interface.ts    # Modelo de datos: Product { id, name, description, price, category, image }
-│   ├── category.interface.ts   # Modelo de datos: Category { id, name }
-│   └── allergen.interface.ts   # Modelo de datos: Allergen { id, name, code } (preparado para uso futuro)
-│
-└── images/                 # Imágenes estáticas del sitio (portada, interior, ramen, etc.)
+│   ├── product.interface.ts
+│   ├── category.interface.ts
+│   ├── order.interface.ts
+│   └── allergen.interface.ts
+└── images/
 ```
 
----
+## Rutas de la aplicación
 
-## 🧭 Rutas de la aplicación
+- `/` — HomePage
+- `/home` — alias de HomePage
+- `/menu` — MenuPage con productos
+- `/login` — LoginPage
+- `/register` — RegisterPage
+- `/order` — OrderPage para enviar el pedido
+- `/**` — Error404Page
 
-| Ruta         | Componente         | Descripción                            |
-|--------------|--------------------|----------------------------------------|
-| `/`          | `HomePage`         | Página de bienvenida con hero visual   |
-| `/home`      | `HomePage`         | Alias de la ruta raíz                  |
-| `/menu`      | `MenuPage`         | Listado de productos desde la API      |
-| `/login`     | `LoginPage`        | Formulario de login                    |
-| `/register`  | `RegisterPage`     | Formulario de registro                 |
-| `/**`        | `Error404Page`     | Ruta comodín para páginas no encontradas |
+## Funcionalidades principales
 
----
+- Login y registro funcionando contra el backend.
+- Autenticación: token y rol se guardan en `localStorage`.
+- Si el usuario es `admin`, el login redirige al dashboard externo.
+- Productos y categorías se cargan desde la API y se guardan en IndexedDB para cache local.
+- El carrito/pedido se mantiene en IndexedDB mientras se prepara.
+- El envío del pedido usa el token de `localStorage` para autorizar la petición a `/api/orders`.
 
-## ⚙️ Arquitectura y flujo de datos
+## Servicios y componentes
 
-```
-Usuario visita /menu
-        │
-        ▼
-   MenuPage (página)
-        │  al iniciar, llama a:
-        ▼
-  ProductService.loadProducts()
-        │  hace GET a:
-        ▼
-  http://localhost:8080/api/products
-        │  respuesta: { data: Product[] }
-        │  mapea la imagen → http://localhost:8080/storage/<imagen>
-        ▼
-  products (Signal<Product[]>)  ←  estado reactivo global
-        │
-        ▼
-  CategorySection (por cada producto)
-        │
-        ▼
-  ProductCard (tarjeta visual individual)
-```
+- **ProductService**: maneja productos, categorías y cache en IndexedDB.
+- **OrderService**: gestiona el carrito, añade, elimina, limpia y persiste el pedido en IndexedDB.
+- **LoginService**: ejecuta login contra el backend y guarda token/rol en `localStorage`.
+- **IndexedDbService**: abstracción de la base de datos local para productos, categorías y pedidos.
+- **MenuService**: controla el estado del menú lateral.
 
-El header y el sidenavbar son independientes de las páginas y se renderizan en `app.ts` de forma persistente en toda la aplicación.
+Páginas clave:
 
----
+- **HomePage**: bienvenida y navegación.
+- **MenuPage**: muestra productos y permite agregar al pedido.
+- **LoginPage**: formulario de acceso y redirección según rol.
+- **RegisterPage**: formulario de registro.
+- **OrderPage**: formulario de envío de pedido con validación.
+- **Error404Page**: ruta comodín.
 
-## 🔌 Dependencias con el backend
+Componentes principales:
 
-El frontend espera un backend corriendo en `http://localhost:8080` con los siguientes endpoints:
+- **Header**: barra superior y navegación.
+- **Sidenavbar**: menú lateral.
+- **ProductCard**: tarjeta visual de producto.
+- **CategorySection**: sección agrupada por categoría.
 
-| Endpoint                        | Método | Descripción                          |
-|---------------------------------|--------|--------------------------------------|
-| `/api/products`                 | GET    | Devuelve `{ data: Product[] }`       |
-| `/storage/<nombre-de-imagen>`   | GET    | Sirve las imágenes de los productos  |
+## Estado actual
 
-> ⚠️ Sin el backend activo, la página `/menu` no mostrará productos (el resto de páginas son estáticas).
+- El frontend está operativo con login y registro.
+- El backend debe estar disponible en `http://localhost:8080`.
+- El carrito y el pedido se mantienen en IndexedDB hasta su envío.
+- El login guarda `auth_token` y `role` en `localStorage`.
+- Si el usuario es `admin`, se redirige al dashboard externo configurado en `environment.dashboardUrl`.
+- Las categorías y productos se cachean en IndexedDB para recargas posteriores.
 
----
+## Tests y GitHub Actions
 
-## 🚀 Cómo arrancar el proyecto
+- Los tests se ejecutan con `npm test` usando **Karma / Jasmine**.
+- Aunque no hay un workflow de GitHub Actions definido en este repositorio, la integración es directa: una acción puede ejecutar `npm install` y `npm test` en cada push.
 
-### Requisitos previos
+## Cómo arrancar en local
 
-- [Angular CLI](https://angular.io/cli) instalado globalmente:
+1. En el directorio del proyecto:
+   ```bash
+   cd frontend/public-angular/front-angular
+   ```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Arranca la app:
+   ```bash
+   npm start
+   ```
 
-```bash
-npm install -g @angular/cli
-```
-
-### Pasos
-
-
-
-1. **Instala las dependencias:**
-
-```bash
-npm install
-```
-
-2. **Arranca el servidor de desarrollo:**
-
-```bash
-npm start
-```
-
-Esto ejecuta `ng serve`. La aplicación estará disponible en:
-
-```
-http://localhost:4200
-```
-
-> El servidor casi siempre se recarga automáticamente cuando editas cualquier archivo fuente.
-
-### Scripts disponibles
-
-| Comando         | Descripción                                 |
-|-----------------|---------------------------------------------|
-| `npm start`     | Arranca el servidor de desarrollo           |
-| `npm run build` | Compila el proyecto para producción         |
-| `npm test`      | Ejecuta los tests unitarios con Karma       |
-
----
-
-## 🏗️ Estado actual del proyecto
-
-El proyecto está en desarrollo. Algunas funcionalidades están preparadas pero pendientes de implementación:
-
-- **Login y Registro**: los formularios recogen los datos pero el `AuthService` todavía no existe. El `TODO` en el código indica que está a la espera del backend.
-- **Alérgenos**: la interfaz `Allergen` está definida con todos los códigos (GLUTEN, LACTEOS, PESCADO…), pero no se usa aún en `Product`.
-- **Filtrado del menú**: existe código comentado en `MenuPage` para filtrar por nombre y agrupar por categoría. Está preparado pero desactivado.
-- **Selector de idioma**: el header tiene lógica para cambiar entre idiomas (ES, EN…), pero no está conectado a un sistema de traducción  (se podria usar la libreria i18n de angular para traducir sin tener que cambiar el codigo fuente).
-
----
-
-## 🛠️ Tecnologías utilizadas
-
-- **Angular 17+** con componentes standalone
-- **Angular Signals** para gestión de estado reactivo
-- **RxJS** para llamadas HTTP
-- **SCSS** para los estilos
-- **Angular Router** con carga lazy en la página 404
+La aplicación queda disponible en `http://localhost:4200`.

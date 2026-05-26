@@ -13,12 +13,14 @@
     </div>
     
     <div class="header__right">
-        <button class="header__icon-btn header__cart" aria-label="Ver pedido">
-            🛒
-            <span class="header__cart-count">2</span>
+        <button (click)="goToOrder()" class="header__icon-btn header__cart" aria-label="Ver pedido">
+            <lucide-icon [img]="ShoppingCart" size="20"></lucide-icon>
+            @if (totalItems() > 0) {
+                <span class="header__cart-count">{{totalItems()}}</span>
+            }
         </button>
         <!-- Selector idioma -->
-        <div class="header__lang">
+        <!-- <div class="header__lang">
             <button (click)="LangToggle()" class="header__lang-btn">
                 🌍 <span>{{ currentLang() }}</span> ▼
             </button>
@@ -30,7 +32,7 @@
                 <button (click)="setLang('JP')" class="btn">JP</button>
             </div>
             }
-        </div>
+        </div> -->
     </div>
 </header>
 

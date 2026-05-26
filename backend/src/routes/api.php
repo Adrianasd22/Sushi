@@ -23,18 +23,26 @@ Route::get('categories/{id}', [CategoryController::class, 'show']);
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
 
+//temp
+
 
 // ---- CON LOGIN (sea user o admin) ----
 Route::middleware('auth:sanctum')->group(function () {
     // Aqui van las rutas de post y get order por usuario
     // Ademas de crear reservar y ver sus reservas
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('orders', [OrderController::class, 'store']);
+    Route::get('/my-orders', [OrderController::class, 'myOrders']);  // Obtener los pedidos del usuario autenticado
+    Route::get('/my-orders/{id}', [OrderController::class, 'myOrder']);
 });
 
 
 // ---- CON ROL WORKER O ADMIN ----
 Route::middleware(['auth:sanctum', 'role:admin,worker'])->group(function () {
     //Aqui van las rutas de poder ver las reservas y los pedidos
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
 });
 
 
@@ -44,7 +52,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
 
-        Route::post('products', [ProductController::class, 'store']);
+    Route::post('products', [ProductController::class, 'store']);
     Route::put('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
 
@@ -54,12 +62,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::get('categories-with-products', [CategoryController::class, 'withProducts']);
-
     //Rutas de pedidos
-    Route::get('orders',          [OrderController::class, 'index']);
-    Route::get('orders/{id}',     [OrderController::class, 'show']);
-    Route::post('orders',         [OrderController::class, 'store']);
     Route::put('orders/{id}',     [OrderController::class, 'update']);
     Route::delete('orders/{id}',  [OrderController::class, 'destroy']);
 });

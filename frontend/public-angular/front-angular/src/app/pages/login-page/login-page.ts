@@ -1,38 +1,57 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { LoginService } from '../../services/login.service';
+import { environment } from '../../../environments/environment';
+import { LucideAngularModule, Store, Bike, BadgeEuro } from 'lucide-angular';
 
 @Component({
   selector: 'app-login-page',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, LucideAngularModule],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
 })
 export class LoginPage {
+  readonly Store = Store;
+  readonly Bike = Bike;
+  readonly BadgeEuro = BadgeEuro;
 
-  email    = signal('');
+  apiUrl = environment.loginUrl;
+  email = signal('');
   password = signal('');
 
-  constructor(private http: HttpClient) {}
+  constructor(private loginService: LoginService) {}
+
+  redirect: (url: string) => void = (url: string) => {
+    window.location.href = url;
+  };
 
   onLogin() {
-    
-    const data = {
+    const credentials = {
       email: this.email(),
-      password: this.password()
+      password: this.password(),
     };
 
-
-    //Cambiar el localhost por la direccion de la api cuando este desplegado en AWS
-    this.http.post("http://localhost:8080/api/login", data, {headers: {'Content-Type': 'application/json'}}).subscribe({     //El header no es necesario hasta donde entiendo pero queda bonito
-      next: (res) => {
-        console.log('Usuario autenticado:', res);
+    this.loginService.login(credentials).subscribe({
+      next: (response) => {
+        // Si el login es de admin, al dashboard
+        // Si el login es de usuario, al menu
+        if (response.user.role == 'admin') {
+          alert(
+            'Bienvenido administrador ' + response.user.name + '. Redirigiendo al dashboard...',
+          );
+          const token = response.access_token;
+          const role = response.user.role;
+          this.redirect(environment.dashboardUrl + `?token=${token}&role=${role}`);
+        } else {
+          alert('Bienvenido de vuelta, ' + response.user.name);
+          this.redirect(environment.menuUrl);
+        }
       },
       error: (err) => {
-        console.error('Error de autenticación:', err);
-      }
+        console.error('Error de login', err);
+        alert('Error de login: ' + (err.error?.message || 'Error desconocido'));
+      },
     });
-
   }
 }

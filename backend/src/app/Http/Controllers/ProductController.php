@@ -3,47 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        // Cargar productos
         $products = Product::with('category')->get();
-
-        // Enviar los datos a la vista
-        return view('products.index', ['products' => $products]);
-
-// public function index(Request $request)
-// {
-//     $query = Product::with(['category', 'intolerances']);
-
-//     if ($request->search) {
-//         $query->where('name', 'LIKE', "%{$request->search}%");
-//     }
-
-//     if ($request->category_id) {
-//         $query->where('category_id', $request->category_id);
-//     }
-
-//     if ($request->sort) {
-//         $query->orderBy($request->sort, $request->order ?? 'asc');
-//     }
-
-//     return ProductResource::collection(
-//         $query->paginate(10)
-//     );
-// }
+        return view('products.index', compact('products'));
     }
 
     public function create()
     {
-        return view('products.create');
-        // return view('products.form', [
-        //     'categories' => Category::all(),
-        //     'intolerances' => Intolerance::all(),
-        // ]);
+        $categories = Category::all();                    // ← necesario para el <select>
+        return view('products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -56,13 +30,15 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
         Product::create($validated);
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')
+                ->with('success', 'Producto creado correctamente.');  // ← mensaje flash
     }
 
 
     public function edit(Product $product)
     {
-        return view('products.edit', ['product' => $product]);
+        $categories = Category::all();                    // ← necesario para el <select>
+        return view('products.edit', compact('product', 'categories'));
     }
 
     // Procesa los cambios del formulario de edición
@@ -77,12 +53,14 @@ class ProductController extends Controller
         ]);
         // 2. ACTUALIZAR:
         $product->update($validated);
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')
+                ->with('success', 'Producto actualizado correctamente.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')
+                ->with('success', 'Producto eliminado.');
     }
 }

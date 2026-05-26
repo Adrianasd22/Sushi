@@ -2,33 +2,32 @@ import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from
 import { Logo } from "../logo/logo";
 import { MenuService } from '../../../services/menu.service';
 import { Sidenavbar } from "./sidenavbar/sidenavbar";
+import { OrderService } from '../../../services/order.service';
+import { Router } from '@angular/router';
+import { ShoppingCart, LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-header',
-  imports: [Logo, Sidenavbar],
+  imports: [Logo, Sidenavbar, LucideAngularModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
+  readonly ShoppingCart = ShoppingCart;
+
+  private router = inject(Router);
+  goToOrder() {
+    this.router.navigate(['/order']);
+  }
+
+  orderService = inject(OrderService);
+  totalItems = this.orderService.totalItems;
 
   showLangOptions = signal(false);
   currentLang = signal('ES');
 
-  /**
-   * MENU SIDENAVBAR
-   */
-  
   menuService = inject(MenuService);
-
-  // scrolled = signal(false);
-  // @HostListener('window:scroll')
-  // onScroll() {
-  //     this.scrolled.set(window.scrollY > 0);
-  // }
-
-
-
   
   /**
    * IDIOMAS

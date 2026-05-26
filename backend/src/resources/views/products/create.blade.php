@@ -1,157 +1,196 @@
-<!DOCTYPE html>
-<html lang="es">
+<x-app-layout>
 
-<head>
-    <meta charset="UTF-8">
-    <title>{{ isset($product) ? 'Editar producto' : 'Nuevo producto' }}</title>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Nuevo producto') }}
+        </h2>
+    </x-slot>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <div class="py-8">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#dc2626'
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-
-<body class="bg-gray-900 text-gray-100 p-6">
-
-    <div class="max-w-5xl mx-auto">
-
-        <!-- HEADER -->
-        <div class="flex justify-between items-center mb-6">
-
-            <!-- VOLVER -->
-            <a href="{{ route('products.index') }}"
-                class="flex items-center gap-2 text-gray-300 hover:text-white">
-                ← Volver
-            </a>
-
-            <!-- GUARDAR -->
-            <button form="productForm"
-                class="bg-primary hover:bg-red-700 px-5 py-2 rounded-lg">
-                Guardar
-            </button>
-        </div>
-
-        <!-- FORM -->
-        <form id="productForm"
-            method="POST"
-            action="{{ isset($product) ? route('products.update', $product) : route('products.store') }}"
-            enctype="multipart/form-data">
-
-            @csrf
-            @if(isset($product))
-            @method('PUT')
-            @endif
-
-            <div class="grid grid-cols-3 gap-6">
-
-                <!-- IZQUIERDA (IMAGEN) -->
-                <div class="col-span-1">
-
-                    <img
-                        src="{{ isset($product) ? asset('storage/'.$product->image) : 'https://via.placeholder.com/300' }}"
-                        class="w-full h-64 object-cover rounded-lg mb-4">
-
-                    <input type="file" name="image" class="hidden" id="imageInput">
-
-                    <label for="imageInput"
-                        class="block text-center bg-gray-800 border border-gray-700 py-2 rounded cursor-pointer hover:bg-gray-700">
-                        Cambiar imagen
-                    </label>
-
+            {{-- ── CABECERA ── --}}
+            <div class="flex items-center gap-3">
+                <a href="{{ route('products.index') }}"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200
+                          hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Nuevo producto</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                        Rellena los datos para añadir un producto al catálogo
+                    </p>
                 </div>
-
-                <!-- DERECHA (FORMULARIO) -->
-                <div class="col-span-2 space-y-4">
-
-                    <!-- NOMBRE -->
-                    <div>
-                        <label class="text-sm text-gray-400">Nombre</label>
-                        <input type="text" name="name"
-                            value="{{ old('name', $product->name ?? '') }}"
-                            class="w-full mt-1 p-3 bg-gray-800 border border-gray-700 rounded">
-                    </div>
-
-                    <!-- DESCRIPCION -->
-                    <div>
-                        <label class="text-sm text-gray-400">Descripción</label>
-                        <textarea name="description"
-                            class="w-full mt-1 p-3 bg-gray-800 border border-gray-700 rounded">{{ old('description', $product->description ?? '') }}</textarea>
-                    </div>
-
-                    <!-- PRECIO -->
-                    <div>
-                        <label class="text-sm text-gray-400">Precio (€)</label>
-                        <input type="number" step="0.01" name="price"
-                            value="{{ old('price', $product->price ?? '') }}"
-                            class="w-full mt-1 p-3 bg-gray-800 border border-gray-700 rounded">
-                    </div>
-
-                    <!-- CATEGORIA -->
-                    <!-- <div>
-                        <label class="text-sm text-gray-400">Categoría</label>
-
-                        <select name="category_id"
-                            class="w-full mt-1 p-3 bg-gray-800 border border-gray-700 rounded">
-
-                            @foreach($categories as $category)
-                            <option value="{{ $category->id }}"
-                                {{ (old('category_id', $product->category_id ?? '') == $category->id) ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                            @endforeach
-
-                        </select>
-                    </div> -->
-
-                    <!-- INTOLERANCIAS -->
-                    <!-- <div>
-                        <label class="text-sm text-gray-400">Intolerancias</label>
-
-                        <div class="flex flex-wrap gap-2 mt-2">
-
-                            @php
-                            $selected = old('intolerances', $product->intolerances ?? []);
-                            @endphp
-
-                            @foreach($intolerances as $intolerance)
-                            <label class="cursor-pointer">
-
-                                <input type="checkbox"
-                                    name="intolerances[]"
-                                    value="{{ $intolerance->id }}"
-                                    class="hidden peer"
-                                    {{ in_array($intolerance->id, $selected) ? 'checked' : '' }}>
-
-                                <span class="px-3 py-1 rounded-full border border-gray-600
-                                    peer-checked:bg-primary peer-checked:border-primary
-                                    hover:bg-gray-700 text-sm">
-                                    {{ $intolerance->name }}
-                                </span>
-
-                            </label>
-                            @endforeach
-
-                        </div>
-                    </div> -->
-
-                </div>
-
             </div>
 
-        </form>
+            {{-- ── FORMULARIO ── --}}
+            {{--
+                action  → products.store  (POST /products)
+                enctype → necesario cuando añadas subida de imagen real
+            --}}
+            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-5">
+                @csrf
 
+                {{-- ── CARD PRINCIPAL ── --}}
+                <div class="bg-white dark:bg-slate-800
+                            border border-slate-200 dark:border-slate-700
+                            rounded-xl shadow-sm divide-y divide-slate-100 dark:divide-slate-700">
+
+                    {{-- Nombre --}}
+                    <div class="px-5 py-4">
+                        <label for="name"
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Nombre <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="name" name="name" value="{{ old('name') }}"
+                            placeholder="Ej: Salmón Nigiri"
+                            class="w-full px-3 py-2 rounded-lg text-sm
+                                      bg-white dark:bg-slate-900
+                                      border border-slate-200 dark:border-slate-600
+                                      text-slate-900 dark:text-slate-100
+                                      placeholder-slate-400 dark:placeholder-slate-500
+                                      focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent
+                                      @error('name') border-rose-500 @enderror
+                                      transition">
+                        @error('name')
+                        <p class="mt-1.5 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Descripción --}}
+                    <div class="px-5 py-4">
+                        <label for="description"
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Descripción
+                        </label>
+                        <textarea id="description" name="description" rows="3"
+                            placeholder="Describe el producto brevemente..."
+                            class="w-full px-3 py-2 rounded-lg text-sm resize-none
+                                         bg-white dark:bg-slate-900
+                                         border border-slate-200 dark:border-slate-600
+                                         text-slate-900 dark:text-slate-100
+                                         placeholder-slate-400 dark:placeholder-slate-500
+                                         focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent
+                                         transition">{{ old('description') }}</textarea>
+                        @error('description')
+                        <p class="mt-1.5 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Precio + Categoría (en fila) --}}
+                    <div class="px-5 py-4 grid grid-cols-2 gap-4">
+
+                        {{-- Precio --}}
+                        <div>
+                            <label for="price"
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Precio (€) <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2
+                                             text-slate-400 dark:text-slate-500 text-sm pointer-events-none">€</span>
+                                <input type="number" id="price" name="price"
+                                    value="{{ old('price') }}"
+                                    placeholder="0.00" step="0.01" min="0"
+                                    class="w-full pl-7 pr-3 py-2 rounded-lg text-sm
+                                              bg-white dark:bg-slate-900
+                                              border border-slate-200 dark:border-slate-600
+                                              text-slate-900 dark:text-slate-100
+                                              placeholder-slate-400 dark:placeholder-slate-500
+                                              focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent
+                                              @error('price') border-rose-500 @enderror
+                                              transition">
+                            </div>
+                            @error('price')
+                            <p class="mt-1.5 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Categoría --}}
+                        <div>
+                            <label for="category_id"
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Categoría
+                            </label>
+                            <select id="category_id" name="category_id"
+                                class="w-full px-3 py-2 rounded-lg text-sm
+                                           bg-white dark:bg-slate-900
+                                           border border-slate-200 dark:border-slate-600
+                                           text-slate-900 dark:text-slate-100
+                                           focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent
+                                           transition">
+                                <option value="">Sin categoría</option>
+                                @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                            <p class="mt-1.5 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- Imagen (placeholder — sin funcionalidad real aún) --}}
+                    <div class="px-5 py-4">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Imagen
+                        </label>
+
+                        {{--
+                            PLACEHOLDER VISUAL — cuando quieras activar la subida real:
+                            1. Quita la clase 'pointer-events-none opacity-60' del label
+                            2. Quita el 'disabled' del input
+                            3. Asegúrate de tener enctype="multipart/form-data" en el form (ya está)
+                            4. En el controlador: $request->file('image')->store('products', 'public')
+                        --}}
+                        <label class="flex flex-col items-center justify-center w-full h-36
+                                      border-2 border-dashed border-slate-200 dark:border-slate-600
+                                      rounded-xl cursor-not-allowed pointer-events-none opacity-60
+                                      bg-slate-50 dark:bg-slate-900/50
+                                      transition">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16m-2-2l1.586-1.586a2 2 0 0 1 2.828 0L20 14m-6-6h.01M6 20h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+                            </svg>
+                            <p class="text-sm text-slate-400 dark:text-slate-500">Subida de imagen próximamente</p>
+                            <input type="file" name="image" accept="image/*" disabled class="hidden">
+                        </label>
+                    </div>
+
+                </div>
+
+                {{-- ── BOTONES ── --}}
+                <div class="flex justify-end gap-3">
+                    <a href="{{ route('products.index') }}"
+                        class="px-4 py-2 rounded-lg text-sm font-medium
+                              border border-slate-200 dark:border-slate-600
+                              text-slate-600 dark:text-slate-300
+                              hover:bg-slate-100 dark:hover:bg-slate-700
+                              transition-colors duration-100">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                        class="px-5 py-2 rounded-lg text-sm font-medium
+                                   bg-rose-600 hover:bg-rose-700 active:bg-rose-800
+                                   text-white shadow-sm transition-colors duration-100">
+                        Guardar producto
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
 
-</body>
-
-</html>
+</x-app-layout>

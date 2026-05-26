@@ -84,19 +84,46 @@ Sushi\backend\src\storage\app\public\products\gyozas.png
 ```
 
 ## BREEZE:
-Breeze es un generador de autentificacion automatica.
+¿Qué es Laravel Breeze?
+Breeze es el starter kit oficial de autenticación de Laravel. Cuando lo instalas en modo "Blade", te genera automáticamente:
+Lo que Breeze te da:
 
-Te crea automáticamente:
+- Rutas de login, registro, recuperación de contraseña, verificación de email
 
-🔐 Backend
-- Controlador de login
-- Controlador de registro
-- Validaciones
-- Logout
-- Rutas de auth
-🎨 Frontend (opcional)
-- Vistas Blade (login, register, etc.)
+- Controladores de autenticación ya hechos
 
+- Un layout base (app.blade.php) con navegación responsiva
+
+- Componentes Blade reutilizables en resources/views/components/
+
+- Integración con Tailwind CSS
+
+Los componentes clave que debes conocer:
+Componente->Lo que hace
+
+<x-app-layout>El layout principal con navbar y sidebar ya incluidos
+
+<x-guest-layout>Layout para páginas sin autenticación (login, registro)
+
+<x-nav-link> Links de navegación con estado activo automático
+
+<x-primary-button> Botón estilizado principal
+
+<x-input-error> Muestra errores de validación
+
+<x-slot:header> Slot para poner el título de cada página
+
+La estructura que genera Breeze:
+resources/
+  views/
+    layouts/
+      app.blade.php        ← Layout principal
+      navigation.blade.php ← La navbar
+    components/
+      primary-button.blade.php
+      nav-link.blade.php
+      ...
+    dashboard.blade.php    ← Ejemplo de página
 
 ```
 composer require laravel/breeze --dev
