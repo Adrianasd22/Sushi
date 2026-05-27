@@ -97,3 +97,52 @@ Este backend provee:
 - almacenamiento de imágenes vía `storage`.
 
 Para la lista completa de rutas y modelos, usa la documentación Swagger en la URL indicada.
+
+# Checklist para iniciar el AWS 
+
+Como esta en el aws acadamy hay que preparar varias cosas antes de iniciarlo todo porque si no dará problemas (no preocuparse tanto por el github actions)
+
+## IP de las instancias
+
+Con esto nada porque estan como ip elasticas, asi que no deberia dar problema, de todas formas si las da al hacer
+
+```bash
+terraform apply
+```
+
+Cuando termine los output son las ip del frontend, backend y la url del bucket S3
+
+>EC2_HOST -> IP del frontend
+>EC2_BACKEND_HOST -> IP del backend
+
+## Actualizar credenciales
+
+Al iniciar el laboratorio (que dura 4 horas), ir a la parte de AWS Details -> AWS CLI (show) y copiar en el /.aws/config
+Ademas de cambiarlos en los secrets de actions:
+
+>AWS_ACCESS_KEY_ID -> aws_access_key_id
+>AWS_SECRET_ACCESS_KEY -> aws_secret_access_key
+>AWS_SESSION_TOKEN -> aws_session_token (copiar entero)
+
+## Actualizar IP del backend
+
+Igual que con lo de las IP de las instancias, como es elastica no deberia de haber que cambiarla.
+Por si acaso cambiara, ir al .env del backend (ec2 del backend -> /home/ubuntu/sushi/backend/src/.env) y cambiar:
+
+``` bash
+APP_URL=http://ip_backend:8080
+```
+
+## Actualizar la IP del backend en el frontend
+
+Más de lo mismo.
+Ir a los archivos donde este la IP del backend en el front:
+
+#### REACT: /home/ubuntu/sushi/frontend/front-react/src/config/env.ts
+#### Angular: /home/ubuntu/sushi/frontend/public-angular/front-angular/src/environments/environment.ts
+
+## Aplicar las instancias si no existen
+```bash
+terraform apply
+```
+> Esto se hace desde la carpeta en la que esta el main.tf
