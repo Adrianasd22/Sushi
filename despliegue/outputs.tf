@@ -5,3 +5,7 @@ output "frontend_ip" {
 output "backend_ip" {
     value = aws_eip.backend_ip.public_ip
 }
+
+output "s3_bucket_url" {
+  value = "https://${aws_s3_bucket.imagenes.bucket}.s3.${var.region}.amazonaws.com"
+}
