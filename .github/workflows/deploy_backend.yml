@@ -1,14 +1,11 @@
 name: Deploy Backend to EC2
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -21,8 +18,18 @@ jobs:
             cd /home/ubuntu/sushi
             git reset --hard HEAD
             git pull origin main
-
             cd /home/ubuntu/sushi/backend
+
+            # Actualizar credenciales AWS en .env
+            sed -i "s|^AWS_ACCESS_KEY_ID=.*|AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}|" .env
+            sed -i "s|^AWS_SECRET_ACCESS_KEY=.*|AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" .env
+            sed -i "s|^AWS_BUCKET=.*|AWS_BUCKET=${{ secrets.AWS_BUCKET }}|" .env
+
+            # Session token: actualizar si existe, añadir si no
+            grep -q "^AWS_SESSION_TOKEN=" .env \
+              && sed -i "s|^AWS_SESSION_TOKEN=.*|AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}|" .env \
+              || echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+
             sudo docker-compose up -d --build
             sleep 10
             sudo docker exec laravel12_app php artisan config:clear
