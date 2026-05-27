@@ -8,6 +8,7 @@ import {
   Bike,
   BadgeEuro
 } from 'lucide-angular';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-register-page',
@@ -36,13 +37,13 @@ readonly BadgeEuro = BadgeEuro;
 
         console.log('Datos a enviar:', data);
 
-        this.http.post('http://localhost:8080/api/register', data, {headers: {'Content-Type': 'application/json'}})     //Cambiar localhost por la url que sea de la API cuando este desplegada
+        this.http.post(`${environment.apiUrl}/register`, data, {headers: {'Content-Type': 'application/json'}})     //Cambiar localhost por la url que sea de la API cuando este desplegada
         .subscribe({
             next: (res) => {
                 console.log('Registro exitoso:', res);
                 alert('Registro exitoso. Ahora puedes iniciar sesión.');
                 // Redireccionar a la página de login después del registro exitoso
-                window.location.href = 'http://localhost:4200/login';
+                window.location.href = `${environment.redirectRegister}`;
             },
             error: (err) => {
                 console.error('Error en el registro:', err);

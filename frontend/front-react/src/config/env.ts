@@ -7,16 +7,14 @@ const getApiUrl = () => {
   
   // En producción, usa el mismo host pero puerto 8000
   // Reemplaza con la IP del backend en producción
-  const baseUrl = window.location.hostname;
-  return `http://${baseUrl}:8000/api`;
+  return `http://52.23.82.120:8080/api`;
 };
 
 const getStorageUrl = () => {
   if (import.meta.env.DEV) {
-    return 'http://localhost:8000/storage/';
+    return 'http://localhost:8080/storage/';
   }
-  const baseUrl = window.location.hostname;
-  return `http://${baseUrl}:8000/storage/`;
+  return `https://sushi-imagenes-tfg.s3.us-east-1.amazonaws.com/productos/`;
 };
 
 export const env = {

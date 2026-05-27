@@ -20,8 +20,8 @@ function ProductItem({ product }: ProductItemProps) {
   const { showToast } = useToast();
   const [deleting, setDeleting] = useState(false);
   const imageUrl = product.image
-    ? `${env.API_URL.replace("/api", "")}/storage/${product.image}`
-    : null;
+    ? `${env.STORAGE_URL}${product.image}`
+    : `${env.STORAGE_URL}products/NoImage.png`;
   const fallbackImage = `${env.API_URL.replace("/api", "")}/storage/NoImage.png`;
 
   const handleDelete = async () => {
