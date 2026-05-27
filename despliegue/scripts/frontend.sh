@@ -12,38 +12,42 @@ apt install -y apache2 git unzip curl nodejs npm
 a2enmod rewrite
 a2enmod proxy
 a2enmod proxy_http
-
 systemctl enable apache2
 systemctl start apache2
 
-# Limpiar carpeta web
-rm -rf /var/www/html/*
+#Instalar Node.js y npm
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+
 
 # Clonar proyecto
 cd /home/ubuntu
 git clone https://github.com/Adrianasd22/sushi.git
 cd sushi
 
-echo "Construyendo Frontend Angular..."
-cd frontend/public-angular/front-angular
-npm install
-npm run build
-cd /home/ubuntu/sushi
 
-echo "Construyendo Frontend React..."
-cd frontend/front-react
+# Build angular
+cd /home/ubuntu/sushi/frontend/public-angular/front-angular
 npm install
-npm run build
-cd /home/ubuntu/sushi
+npx ng build --configuration production
 
-# Copiar builds generados
+# Build React
+cd /home/ubuntu/sushi/frontend/front-react
+npm install
+npx run build
+
+# Limpiar carpeta web
+rm -rf /var/www/html/*
+
+# Copiar builds ya generados
 # Angular
 mkdir -p /var/www/html/
-cp -r frontend/public-angular/front-angular/dist/* /var/www/html/
+cp -r /home/ubuntu/sushi/frontend/public-angular/front-angular/dist/*/* /var/www/html/
+
 
 # React
 mkdir -p /var/www/html/admin
-cp -r frontend/front-react/dist/* /var/www/html/admin/
+cp -r /home/ubuntu/sushi/frontend/front-react/dist/* /var/www/html/admin/
 
 # Crear .htaccess para SPA routing
 cat > /var/www/html/.htaccess << 'EOF'

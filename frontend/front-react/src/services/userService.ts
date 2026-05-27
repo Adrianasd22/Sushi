@@ -8,10 +8,14 @@ type ApiResponse<T> = {
 
 
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("auth_token")
+
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    "Accept": "application/json",
+    ...(token
+      ? { Authorization: `Bearer ${token}` }
+      : {}),
   }
 }
 
@@ -68,6 +72,20 @@ export async function updateUser(
   })
 
   return handleResponse<User>(res)
+}
+
+// ── PUT /users/:id/role ─────────────────────────────────────────
+export async function updateUserRole(
+  id: number,
+  role: string,
+): Promise<void> {
+  const res = await fetch(`${env.API_URL}/users/${id}/role`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify({ role }),
+  })
+
+  await handleResponse(res)
 }
 
 // ── DELETE /users/:id ──────────────────────────────────────

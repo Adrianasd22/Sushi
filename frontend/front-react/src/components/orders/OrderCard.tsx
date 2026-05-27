@@ -1,6 +1,6 @@
 import { useState } from "react"
 import {
-  Clock, Utensils, ShoppingBag, PackageCheck,
+  Clock, ShoppingBag, PackageCheck,
   ChevronDown, AlertTriangle, CheckCircle2, User,
 } from "lucide-react"
 import type { Order, OrderStatus } from "../../types/order"
@@ -24,7 +24,6 @@ export const fmt = (n: number) =>
 
 // ── Configuración visual ──────────────────────────────────────────────────────
 
-// Mapeamos mode (pickup/delivery) al look que tenía el original (local/recoger/llevar)
 const MODE_CONFIG = {
   pickup: {
     label: "Recogida",
@@ -42,12 +41,11 @@ const STATUS_CONFIG: Record<OrderStatus, {
   label: string
   color: string
   bg:    string
-  next:  string
 }> = {
-  pendiente:  { label: "Pendiente",  color: "text-amber-400",   bg: "bg-amber-400/10",   next: "Iniciar"   },
-  en_curso:   { label: "En curso",   color: "text-blue-400",    bg: "bg-blue-400/10",    next: "Completar" },
-  completado: { label: "Completado", color: "text-emerald-400", bg: "bg-emerald-400/10", next: ""          },
-  cancelado:  { label: "Cancelado",  color: "text-red-400",     bg: "bg-red-400/10",     next: ""          },
+  pendiente:  { label: "Pendiente",  color: "text-amber-400",   bg: "bg-amber-400/10"   },
+  en_curso:   { label: "En curso",   color: "text-blue-400",    bg: "bg-blue-400/10"    },
+  completado: { label: "Completado", color: "text-emerald-400", bg: "bg-emerald-400/10" },
+  cancelado:  { label: "Cancelado",  color: "text-red-400",     bg: "bg-red-400/10"     },
 }
 
 export const NEXT_STATUS: Record<OrderStatus, OrderStatus | null> = {
@@ -71,7 +69,7 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
   )
 
   const toggleLine = (lineId: number) => {
-    if (order.status === "completado" || order.status === "cancelado") return
+    if (order.status !== "en_curso") return
     setChecked(prev => {
       const next = new Set(prev)
       next.has(lineId) ? next.delete(lineId) : next.add(lineId)
@@ -85,6 +83,22 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
   const ModeIcon   = modeConf.icon
   const statusConf = STATUS_CONFIG[order.status]
   const isDone     = order.status === "completado" || order.status === "cancelado"
+
+  // ── Lógica del botón de acción ────────────────────────────────────────────
+  // pendiente → botón "Iniciar pedido" siempre activo
+  // en_curso  → botón "Completar pedido" solo activo cuando todos los items están marcados
+  const isPendiente = order.status === "pendiente"
+  const isEnCurso   = order.status === "en_curso"
+
+  const canAdvance  = isPendiente || (isEnCurso && allChecked)
+
+  const buttonLabel = isPendiente
+    ? "Iniciar pedido"
+    : "Completar pedido"
+
+  const buttonHint = isEnCurso && !allChecked
+    ? `Marca los ${order.products.length - checked.size} items restantes para completar`
+    : null
 
   return (
     <div className={`
@@ -106,7 +120,6 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
       <div className="p-4 flex items-start gap-3">
         <div className="flex-1 min-w-0 space-y-1.5">
 
-          {/* Badges: id · modo · status · urgente */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-bold text-zinc-100 font-mono">
               #{String(order.id).padStart(3, "0")}
@@ -116,7 +129,7 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
               <ModeIcon size={10} />
               {modeConf.label}
               {order.mode === "delivery" && order.address && (
-                <span className="ml-0.5 opacity-70 truncate max-w-[80px]" title={order.address}>
+                <span className="ml-0.5 opacity-70 truncate max-w-20" title={order.address}>
                   · {order.address.split(",")[0]}
                 </span>
               )}
@@ -134,7 +147,6 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
             )}
           </div>
 
-          {/* Meta: usuario · tiempo · total */}
           <div className="flex items-center gap-3 text-xs text-zinc-500">
             <span className="flex items-center gap-1">
               <User size={10} />
@@ -149,7 +161,6 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
 
         </div>
 
-        {/* Botón expandir */}
         <button
           onClick={() => setExpanded(p => !p)}
           className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-zinc-300 transition-colors shrink-0"
@@ -172,7 +183,7 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
             </div>
           )}
 
-          {/* Teléfono (útil para delivery/pickup) */}
+          {/* Teléfono */}
           <div className="mx-4 mb-3 text-xs text-zinc-600">
             📞 {order.phone}
           </div>
@@ -181,35 +192,38 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
           <div className="px-4 pb-3 space-y-1">
             {order.products.map(line => {
               const done = checked.has(line.id)
+              // Los checkboxes solo son interactivos cuando el pedido está en_curso
+              const interactive = isEnCurso
+
               return (
                 <button
                   key={line.id}
                   onClick={() => toggleLine(line.id)}
-                  disabled={isDone}
+                  disabled={!interactive}
                   className={`
                     w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left
                     transition-all duration-150 group
-                    ${isDone ? "cursor-default" : "hover:bg-zinc-800/60 cursor-pointer"}
+                    ${interactive ? "hover:bg-zinc-800/60 cursor-pointer" : "cursor-default"}
                     ${done ? "opacity-50" : ""}
                   `}
                 >
-                  {/* Checkbox */}
+                  {/* Checkbox — solo visible en en_curso */}
                   <div className={`
                     w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-all
-                    ${done
-                      ? "bg-emerald-500 border-emerald-500"
-                      : "border-zinc-600 group-hover:border-zinc-400"
+                    ${!interactive
+                      ? "border-zinc-800 bg-zinc-800/50"                          // gris inactivo
+                      : done
+                        ? "bg-emerald-500 border-emerald-500"                     // marcado
+                        : "border-zinc-600 group-hover:border-zinc-400"           // desmarcado
                     }
                   `}>
                     {done && <CheckCircle2 size={11} className="text-white" />}
                   </div>
 
-                  {/* Nombre producto */}
                   <span className={`flex-1 text-sm transition-all ${done ? "line-through text-zinc-600" : "text-zinc-200"}`}>
                     {line.name}
                   </span>
 
-                  {/* Cantidad */}
                   <span className={`text-xs font-mono shrink-0 ${done ? "text-zinc-700" : "text-zinc-500"}`}>
                     ×{line.quantity}
                   </span>
@@ -218,8 +232,8 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
             })}
           </div>
 
-          {/* Barra de progreso */}
-          {!isDone && order.products.length > 0 && (
+          {/* Barra de progreso — solo visible en en_curso */}
+          {isEnCurso && order.products.length > 0 && (
             <div className="px-4 pb-3 flex items-center gap-2">
               <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
                 <div
@@ -233,32 +247,35 @@ export function OrderCard({ order, onAdvance }: OrderCardProps) {
             </div>
           )}
 
-          {/* Botón avanzar estado */}
+          {/* Botón de acción */}
           {!isDone && (
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 space-y-1.5">
               <button
-                onClick={() => onAdvance(order.id)}
+                onClick={() => canAdvance && onAdvance(order.id)}
+                disabled={!canAdvance}
                 className={`
                   w-full py-2 rounded-lg text-sm font-medium transition-all duration-150
-                  ${allChecked
-                    ? "bg-red-600 hover:bg-red-500 text-white"
-                    : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+                  ${canAdvance
+                    ? "bg-red-600 hover:bg-red-500 text-white cursor-pointer"
+                    : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
                   }
                 `}
               >
-                {statusConf.next} pedido
-                {!allChecked && (
-                  <span className="text-xs opacity-50 ml-1.5">
-                    · marca todos los items
-                  </span>
-                )}
+                {buttonLabel}
               </button>
+
+              {/* Hint solo cuando está en_curso y faltan items */}
+              {buttonHint && (
+                <p className="text-xs text-zinc-600 text-center">
+                  {buttonHint}
+                </p>
+              )}
             </div>
           )}
         </>
       )}
 
-      {/* Resumen colapsado cuando está completado */}
+      {/* Resumen colapsado cuando está completado/cancelado */}
       {isDone && !expanded && (
         <div className="px-4 pb-3 flex items-center gap-1.5 text-xs text-emerald-500/70">
           <CheckCircle2 size={11} />

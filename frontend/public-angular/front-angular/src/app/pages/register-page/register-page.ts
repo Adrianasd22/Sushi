@@ -2,14 +2,23 @@ import { HttpClient } from '@angular/common/http';
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import {
+  LucideAngularModule,
+  Store,
+  Bike,
+  BadgeEuro
+} from 'lucide-angular';
 
 @Component({
     selector: 'app-register-page',
-    imports: [FormsModule, RouterLink],
+    imports: [FormsModule, RouterLink, LucideAngularModule],
     templateUrl: './register-page.html',
     styleUrl: './register-page.scss',
 })
 export class RegisterPage {
+    readonly Store = Store;
+readonly Bike = Bike;
+readonly BadgeEuro = BadgeEuro;
 
     nombre = signal('');
     email = signal('');

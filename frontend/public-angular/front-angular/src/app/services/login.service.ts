@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'http://localhost:8080/api/login';
+
+  private apiUrl = environment.loginUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -29,5 +31,6 @@ export class LoginService {
 
   logout() {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('role');
   }
 }

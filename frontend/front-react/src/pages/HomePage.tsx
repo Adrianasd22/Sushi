@@ -31,7 +31,7 @@ const links: QuickLink[] = [
   { label: "Pedidos",        desc: "Gestionar pedidos activos",    href: "/orders",       icon: ClipboardList },
   { label: "Mapa de mesas",  desc: "Ver el estado del salón",      href: "/tables-map",   icon: MapPin        },
   { label: "Productos",      desc: "Catálogo y gestión",           href: "/products",     icon: LayoutGrid    },
-  { label: "Ventas",         desc: "Ingresos y estadísticas",      href: "/ventas_ingresos", icon: ArrowUpRight, adminOnly: true },
+  { label: "Ventas",         desc: "Ingresos y estadísticas",      href: "/sales", icon: ArrowUpRight, adminOnly: true },
 ]
 
 export default function HomePage() {

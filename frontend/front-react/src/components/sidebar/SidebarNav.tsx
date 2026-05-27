@@ -1,4 +1,4 @@
-import { Package, Home, LineChart, ClipboardList, CalendarDays, Users, Tags, LayoutGrid, Utensils, Map } from "lucide-react";
+import { Package, Home, LineChart, ClipboardList, Users, Tags, Map } from "lucide-react";
 import SidebarNavItem from "./SidebarNavItem";
 import { useRole } from "../../hooks/useRole";
 
@@ -20,17 +20,17 @@ function SidebarNav({collapsed}:SidebarNavProps) {
         <>
           <SidebarNavItem icon={Users} label="Usuarios" to="/users" collapsed={collapsed}/>
           <SidebarNavItem icon={LineChart} label="Ventas" to="/sales" collapsed={collapsed}/>
-          <SidebarNavItem icon={LayoutGrid} label="Lista mesas" to="/tables-list" collapsed={collapsed}/>
-          <SidebarNavItem icon={ClipboardList} label="Lista pedidos" to="/order-list" collapsed={collapsed}/>
+          {/* <SidebarNavItem icon={LayoutGrid} label="Lista mesas" to="/tables-list" collapsed={collapsed}/> */}
+          {/* <SidebarNavItem icon={ClipboardList} label="Lista pedidos" to="/order-list" collapsed={collapsed}/> */}
         </>
       )}
 
       {/* Divider */}
       <div className="my-4 border-t border-zinc-800" />
       <SidebarNavItem icon={ClipboardList} label="Pedidos" to="/orders" collapsed={collapsed}/>
-      <SidebarNavItem icon={Utensils} label="Mesas" to="/tables" collapsed={collapsed}/>
+      {/* <SidebarNavItem icon={Utensils} label="Mesas" to="/tables" collapsed={collapsed}/> */}
       <SidebarNavItem icon={Map} label="Mapa mesas" to="/tables-map" collapsed={collapsed}/>
-      <SidebarNavItem icon={CalendarDays} label="Reservas" to="/reservas" collapsed={collapsed}/>
+      {/* <SidebarNavItem icon={CalendarDays} label="Reservas" to="/reservas" collapsed={collapsed}/> */}
     </nav>
   );
 }

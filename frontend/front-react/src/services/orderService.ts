@@ -1,11 +1,23 @@
 import { env } from "../config/env"
 import type { ApiResponse, Order, OrderStatus } from "../types/order"
 
+// function authHeaders(): HeadersInit {
+//   const token = localStorage.getItem("token")
+//   return {
+//     "Content-Type": "application/json",
+//     Authorization: `Bearer ${token}`,
+//   }
+// }
+
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("auth_token")
+
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    "Accept": "application/json",
+    ...(token
+      ? { Authorization: `Bearer ${token}` }
+      : {}),
   }
 }
 

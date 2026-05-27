@@ -6,6 +6,7 @@ import { useToast } from "../context/ToastContext";
 import { deleteProduct } from "../../services/productService";
 import { useState } from "react";
 import ConfirmDialog from "../context/ConfirmDialog";
+import { env } from "../../config/env";
 
 interface ProductItemProps {
   product: Product;
@@ -18,6 +19,10 @@ function ProductItem({ product }: ProductItemProps) {
   const [openConfirm, setOpenConfirm] = useState(false);
   const { showToast } = useToast();
   const [deleting, setDeleting] = useState(false);
+  const imageUrl = product.image
+    ? `${env.API_URL.replace("/api", "")}/storage/${product.image}`
+    : null;
+  const fallbackImage = `${env.API_URL.replace("/api", "")}/storage/NoImage.png`;
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -37,7 +42,22 @@ function ProductItem({ product }: ProductItemProps) {
   return (
     <div className="flex items-center gap-4 py-4">
       {/* Imagen */}
-      <div className="w-16 h-16 bg-zinc-700 rounded-md shrink-0" />
+      {/* <div className="w-16 h-16 bg-zinc-700 rounded-md shrink-0" /> */}
+      
+      <div className="w-16 h-16 rounded-md shrink-0 overflow-hidden bg-zinc-700">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage;
+            }}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-zinc-700" />
+        )}
+      </div>
 
       {/* Información */}
       <div className="flex-1">

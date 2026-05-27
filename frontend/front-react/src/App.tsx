@@ -4,7 +4,6 @@ import HomePage from "./pages/HomePage.tsx";
 import ProductsPage from "./pages/ProductsPage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import UsersPage from "./pages/UsersPage.tsx";
-import TablesPage from "./pages/TablesPage.tsx";
 import OrdersPage from "./pages/OrdersPage.tsx";
 import RestaurantMapPage from "./pages/RestaurantMapPage.tsx";
 import CategoriesPage from "./pages/CategoriesPage.tsx";
@@ -27,7 +26,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/tables" element={<TablesPage />} />
+          {/* <Route path="/tables" element={<TablesPage />} /> */}
           <Route path="/tables-map" element={<RestaurantMapPage />} />
           <Route path="/orders" element={<OrdersPage />} />
 
