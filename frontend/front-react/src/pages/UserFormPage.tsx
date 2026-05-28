@@ -59,7 +59,7 @@ export default function UserFormPage() {
           name: form.name,
           email: form.email,
           password: form.password,
-          role: form.role,
+          role: form.role as "admin" | "worker" | "user",
         });
 
         showToast("Usuario creado", "success");

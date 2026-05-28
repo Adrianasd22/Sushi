@@ -1,0 +1,36 @@
+name: Deploy Backend to EC2
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_BACKEND_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/sushi
+            cd /home/ubuntu/sushi
+            git reset --hard HEAD
+            git pull origin main
+
+            # Actualizar credenciales AWS en .env correcto
+            sed -i "s|^AWS_ACCESS_KEY_ID=.*|AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}|" /home/ubuntu/sushi/backend/src/.env
+            sed -i "s|^AWS_SECRET_ACCESS_KEY=.*|AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" /home/ubuntu/sushi/backend/src/.env
+            sed -i "s|^AWS_BUCKET=.*|AWS_BUCKET=${{ secrets.AWS_BUCKET }}|" /home/ubuntu/sushi/backend/src/.env
+            grep -q "^AWS_SESSION_TOKEN=" /home/ubuntu/sushi/backend/src/.env \
+            && sed -i "s|^AWS_SESSION_TOKEN=.*|AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}|" /home/ubuntu/sushi/backend/src/.env \
+            || echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ubuntu/sushi/backend/src/.env
+
+            cd /home/ubuntu/sushi/backend
+            sudo docker-compose down
+            sudo docker-compose up -d --build
+            sleep 10
+            sudo docker exec laravel12_app php artisan config:clear
+            sudo docker exec laravel12_app php artisan route:clear
+            sudo docker exec laravel12_app php artisan migrate:refresh --seed --force

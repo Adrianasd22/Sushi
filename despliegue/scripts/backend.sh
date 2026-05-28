@@ -22,10 +22,10 @@ if [ ! -f .env ]; then
 fi
 
 # Levantar servicios
-docker compose down || true
-docker compose up -d --build
+sudo docker-compose down || true
+sudo docker-compose up -d --build
 
 # Laravel setup
 sleep 15
-docker exec laravel_app php artisan key:generate || true
+sudo docker exec laravel_app php artisan key:generate || true
 docker exec laravel_app php artisan migrate --force || true

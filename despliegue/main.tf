@@ -61,8 +61,8 @@ resource "aws_vpc_security_group_ingress_rule" "backend_ssh" {
 resource "aws_vpc_security_group_ingress_rule" "backend_api" {
   security_group_id = aws_security_group.backend_sg.id
   cidr_ipv4   = "0.0.0.0/0"
-  from_port   = 8000
-  to_port     = 8000
+  from_port   = 8080
+  to_port     = 8080
   ip_protocol = "tcp"
 }
 
@@ -120,6 +120,43 @@ resource "aws_instance" "backend" {
 
 resource "aws_eip" "backend_ip" {
   instance = aws_instance.backend.id
+}
+
+# S3 BUCKET PARA IMÁGENES
+
+resource "aws_s3_bucket" "imagenes" {
+  bucket = "sushi-imagenes-tfg"  
+
+  tags = {
+    Name = "sushi-imagenes-tfg"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "imagenes" {
+  bucket = aws_s3_bucket.imagenes.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "imagenes_public" {
+  bucket = aws_s3_bucket.imagenes.id
+  depends_on = [aws_s3_bucket_public_access_block.imagenes]
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.imagenes.arn}/*"
+      }
+    ]
+  })
 }
 
 /* AMI UBUNTU */
