@@ -1,6 +1,13 @@
 #!/bin/bash
 exec > /tmp/userdata_backend.log 2>&1
 
+# SWAP (evita quedarse sin memoria durante el build, convirtiendo memoria en memoria RAM)
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+
+
 # Sistema
 apt update -y
 apt upgrade -y
@@ -26,6 +33,11 @@ sudo docker-compose down || true
 sudo docker-compose up -d --build
 
 # Laravel setup
-sleep 15
-sudo docker exec laravel_app php artisan key:generate || true
-docker exec laravel_app php artisan migrate --force || true
+
+# Esperar a que Laravel arranque completamente
+echo "Esperando a que los contenedores arranquen..."
+sleep 60
+
+sudo docker exec laravel12_app php artisan key:generate || true
+docker exec laravel12_app php artisan migrate --force || true
+docker exec laravel12_app php artisan db:seed --force || true  #Seeders

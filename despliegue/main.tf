@@ -90,7 +90,9 @@ resource "aws_instance" "frontend" {
     aws_security_group.frontend_sg.id
   ]
 
-  user_data = file("scripts/frontend.sh")
+  user_data = templatefile("scripts/frontend.sh", {
+    backend_ip = aws_eip.backend_ip.public_ip
+  })
 
   tags = {
     Name = "frontend-sushi"
@@ -125,10 +127,10 @@ resource "aws_eip" "backend_ip" {
 # S3 BUCKET PARA IMÁGENES
 
 resource "aws_s3_bucket" "imagenes" {
-  bucket = "sushi-imagenes-tfg"  
+  bucket = "sushi-imagenes-tfg-aqg"  
 
   tags = {
-    Name = "sushi-imagenes-tfg"
+    Name = "sushi-imagenes-tfg-aqg"
   }
 }
 

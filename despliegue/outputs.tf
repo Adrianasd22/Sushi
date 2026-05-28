@@ -9,3 +9,7 @@ output "backend_ip" {
 output "s3_bucket_url" {
   value = "https://${aws_s3_bucket.imagenes.bucket}.s3.${var.region}.amazonaws.com"
 }
+
+output "SushiMiyu-Angular" {
+    value = "http://http://sushimiyu.duckdns.org/"
+}
