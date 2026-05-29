@@ -94,6 +94,11 @@ resource "aws_instance" "frontend" {
     backend_ip = aws_eip.backend_ip.public_ip
   })
 
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp3"
+  }
+
   tags = {
     Name = "frontend-sushi"
   }
@@ -114,6 +119,11 @@ resource "aws_instance" "backend" {
   ]
 
   user_data = file("scripts/backend.sh")
+
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp3"
+  }
 
   tags = {
     Name = "backend-sushi"
