@@ -13,6 +13,7 @@ return [
         'https://13.217.186.186',
         'http://localhost',
         'http://44.197.79.56',
+        'https://sushimiyu2.duckdns.org',
     ],
 
     'allowed_headers' => ['*'],
