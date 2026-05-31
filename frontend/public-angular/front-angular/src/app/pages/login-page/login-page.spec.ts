@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { LoginPage } from './login-page';
 import { LoginService } from '../../services/login.service';
+import { environment } from '../../../environments/environment';
 
 
 describe('LoginPage', () => {
@@ -63,7 +64,7 @@ describe('LoginPage', () => {
 
         expect(loginService.login).toHaveBeenCalled();      //Resultado esperado del test (que haya llamado correctamente a la funcion)
         expect(component.redirect).toHaveBeenCalledWith(
-            jasmine.stringContaining('localhost:5173')      //Esto, una vez desplegado en AWS petara 100% por tema de que las url cambiaran
+            jasmine.stringContaining(`${environment.dashboardUrl}`)      //Esto, una vez desplegado en AWS petara 100% por tema de que las url cambiaran
         );
     });
 
@@ -89,7 +90,7 @@ describe('LoginPage', () => {
 
         expect(loginService.login).toHaveBeenCalled();
         expect((component.redirect)).toHaveBeenCalledWith(
-            jasmine.stringContaining('http://localhost:4200/menu')      //Esto, una vez desplegado en AWS petara 100% por tema de que las url cambiaran
+            jasmine.stringContaining(`${environment.menuUrl}`)      //Esto, una vez desplegado en AWS petara 100% por tema de que las url cambiaran
         );
     });
 
