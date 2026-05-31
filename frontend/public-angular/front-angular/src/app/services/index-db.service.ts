@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class IndexedDbService {
   private dbName = 'sushiDB';
-  private dbVersion = 3;
+  private dbVersion = 4;
 
   private openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
@@ -13,20 +13,15 @@ export class IndexedDbService {
       request.onupgradeneeded = () => {
         const db = request.result;
 
-        if (!db.objectStoreNames.contains('categories')) {
-          db.createObjectStore('categories', { keyPath: 'id' });
-        }
+        if (db.objectStoreNames.contains('categories')) db.deleteObjectStore('categories');
+        if (db.objectStoreNames.contains('products')) db.deleteObjectStore('products');
+        if (db.objectStoreNames.contains('categoriesWithProducts')) db.deleteObjectStore('categoriesWithProducts');
+        if (db.objectStoreNames.contains('order')) db.deleteObjectStore('order');
 
-        if (!db.objectStoreNames.contains('products')) {
-          db.createObjectStore('products', { keyPath: 'id' });
-        }
-
-        if (!db.objectStoreNames.contains('categoriesWithProducts')) {
-          db.createObjectStore('categoriesWithProducts', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('order')) {
-          db.createObjectStore('order', { keyPath: 'id' });
-        }
+        db.createObjectStore('categories', { keyPath: 'id' });
+        db.createObjectStore('products', { keyPath: 'id' });
+        db.createObjectStore('categoriesWithProducts', { keyPath: 'id' });
+        db.createObjectStore('order', { keyPath: 'id' });
       };
 
       request.onsuccess = () => resolve(request.result);
@@ -35,15 +30,15 @@ export class IndexedDbService {
   }
 
   async getAll<T = any>(storeName: string): Promise<T[]> {
-  const db = await this.openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result as T[]);
-    request.onerror = () => reject(request.error);
-  });
-}
+    const db = await this.openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result as T[]);
+      request.onerror = () => reject(request.error);
+    });
+  }
 
   async saveAll(storeName: string, data: any[]) {
     const db = await this.openDB();

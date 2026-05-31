@@ -7,7 +7,7 @@ const getApiUrl = () => {
   
   // En producción, usa el mismo host pero puerto 8000
   // Reemplaza con la IP del backend en producción
-  return `http://sushimiyu2-api.duckdns.org/api`;
+  return `https://sushimiyu2-api.duckdns.org/api`;
 };
 
 const getStorageUrl = () => {
