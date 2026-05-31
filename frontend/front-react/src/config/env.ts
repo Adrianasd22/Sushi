@@ -14,7 +14,7 @@ const getStorageUrl = () => {
   if (import.meta.env.DEV) {
     return 'http://localhost:8080/storage/';
   }
-  return `https://sushi-imagenes-tfg.s3.us-east-1.amazonaws.com/products/`;
+  return `https://sushi-imagenes-tfg.s3.us-east-1.amazonaws.com/`;
 };
 
 export const env = {
