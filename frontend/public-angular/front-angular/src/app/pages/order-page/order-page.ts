@@ -3,6 +3,7 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
 import { HttpClient } from '@angular/common/http';
 import { OrderItem } from '../../interfaces/order.interface';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-page',
@@ -88,14 +89,14 @@ export class OrderPage implements OnInit {
 
     const token = localStorage.getItem('auth_token');
 
-    this.http.post('http://localhost:8080/api/orders', payload, {
+    this.http.post(`${environment.apiUrl}/orders`, payload, {
       headers: 
       {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}})
     .subscribe({
       next: (res) => {
         this.orderService.clearOrder().then(() => {
           alert("Pedido creado correctamente. Gracias por su confianza.");
-          window.location.href = "http://localhost:4200";
+          window.location.href = `${environment.defaultAngular}`;
         });
       },
       error: (err) => {
