@@ -13,7 +13,7 @@ module.exports = function (config) {
       clearContext: false
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Firefox', 'ChromeHeadless'],
+    browsers: ['ChromeHeadless'],
     restartOnFileChange: true,
     singleRun: true,
     captureTimeout: 120000,

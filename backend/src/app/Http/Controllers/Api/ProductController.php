@@ -95,6 +95,7 @@ class ProductController extends Controller
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0',
             'category_id' => 'sometimes|required|exists:categories,id',
+            'image' => 'sometimes|nullable|string',
         ]);
 
         //Si no hay datos

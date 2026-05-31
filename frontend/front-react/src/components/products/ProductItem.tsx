@@ -19,7 +19,7 @@ function ProductItem({ product }: ProductItemProps) {
   const [openConfirm, setOpenConfirm] = useState(false);
   const { showToast } = useToast();
   const [deleting, setDeleting] = useState(false);
-  const imageUrl = product.image
+  let imageUrl = product.image
     ? `${env.STORAGE_URL}${product.image}`
     : `${env.STORAGE_URL}products/NoImage.png`;
   const fallbackImage = `${env.API_URL.replace("/api", "")}/storage/NoImage.png`;

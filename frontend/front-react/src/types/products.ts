@@ -17,5 +17,5 @@ export interface ProductFormData {
   description: string
   price: number
   category_id: number
-  image: null // por ahora siempre null
+  image: string | null
 }

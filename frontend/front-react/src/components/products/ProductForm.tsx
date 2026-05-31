@@ -16,6 +16,7 @@ interface ProductFormState {
   description: string;
   price: string;
   category_id: string;
+  image: string;
 }
 
 function ProductForm({
@@ -33,14 +34,16 @@ function ProductForm({
         description: initialData.description ?? "",
         price: String(initialData.price),
         category_id: String(initialData.category_id),
+        image: initialData.image ?? "",
       };
     }
-    
+
     return {
       name: "",
       description: "",
       price: "",
       category_id: "",
+      image: "",
     };
   });
 
@@ -61,7 +64,7 @@ function ProductForm({
         description: form.description,
         price: Number(form.price),
         category_id: Number(form.category_id),
-        image: null,
+        image: form.image.trim() || null,
       });
     } finally {
       setIsSubmitting(false);
@@ -70,12 +73,27 @@ function ProductForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-8">
-      {/* IZQUIERDA — imagen (placeholder hasta implementar) */}
+      {/* IZQUIERDA — imagen */}
       <div className="flex flex-col items-center gap-4">
-        <div className="w-40 h-40 bg-zinc-800 rounded-md flex items-center justify-center text-zinc-500 text-sm">
-          Sin imagen
+        <div className="w-40 h-40 bg-zinc-800 rounded-md overflow-hidden flex items-center justify-center">
+          {form.image.trim() ? (
+            <img
+              src={`${import.meta.env.DEV ? 'http://localhost:8080/storage/' : 'https://sushi-imagenes-tfg.s3.us-east-1.amazonaws.com/productos/'}${form.image.trim()}`}
+              alt="preview"
+              className="w-full h-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          ) : (
+            <span className="text-zinc-500 text-sm">Sin imagen</span>
+          )}
         </div>
-        <span className="text-xs text-zinc-600">Disponible próximamente</span>
+        <input
+          name="image"
+          value={form.image}
+          onChange={handleChange}
+          placeholder="Nombre del archivo (ej: sushi.jpg)"
+          className="w-40 px-3 py-1.5 bg-zinc-800 text-zinc-100 text-sm rounded-md placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-600"
+        />
       </div>
 
       {/* DERECHA — campos */}

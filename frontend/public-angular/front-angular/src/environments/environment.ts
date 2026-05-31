@@ -6,5 +6,5 @@ export const environment = {
   menuUrl: 'http://44.197.79.56/menu',  //Para el login-page.ts
   dashboardUrl: 'http://44.197.79.56/admin',  //Para login-page.ts (redireccion al dashboard en react)
   redirectRegister: 'http://44.197.79.56/login',  //Para register-page.ts (redirecciona al login tras registrarse)
-
+  defaultAngular: 'http://44.197.79.56',
 };
