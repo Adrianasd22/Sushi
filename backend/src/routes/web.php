@@ -28,11 +28,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('categories', CategoryController::class);
 });
 
-// Redireccion al frontend de angular
-Route::get('/login', function () {
-    return redirect('https://sushimiyu2.duckdns.org/login');
-})->name('login');
-
 require __DIR__.'/auth.php';
 
 // Redirigir /swagger a la UI estática dentro de public/swagger
