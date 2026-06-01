@@ -14,6 +14,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Limpiar espacio antes de rebuildar
+            sudo docker image prune -af
+            sudo docker builder prune -af
+            
             sudo chown -R ubuntu:ubuntu /home/ubuntu/sushi
             cd /home/ubuntu/sushi
             git reset --hard HEAD
@@ -27,9 +31,6 @@ jobs:
             || echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ubuntu/sushi/backend/src/.env
             
             cd /home/ubuntu/sushi/backend
-            # Limpiar espacio antes de rebuildar
-            sudo docker image prune -af
-            sudo docker builder prune -af
             sudo docker-compose down
             sudo docker-compose up -d --build
             sleep 10
